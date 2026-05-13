@@ -1,0 +1,36 @@
+<?php
+
+declare(strict_types=1);
+
+namespace App\Support\Tenancy;
+
+use App\Models\Team;
+use IvanBaric\Corexis\Contracts\TenantResolver;
+
+final class CurrentTeamResolver implements TenantResolver
+{
+    public function enabled(): bool
+    {
+        return true;
+    }
+
+    public function current(): ?Team
+    {
+        return team();
+    }
+
+    public function id(): int|string|null
+    {
+        return current_team_id();
+    }
+
+    public function uuid(): ?string
+    {
+        return team()?->uuid;
+    }
+
+    public function type(): ?string
+    {
+        return Team::class;
+    }
+}

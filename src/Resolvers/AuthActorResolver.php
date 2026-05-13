@@ -1,0 +1,46 @@
+<?php
+
+declare(strict_types=1);
+
+namespace IvanBaric\Corexis\Resolvers;
+
+use IvanBaric\Corexis\Contracts\ActorResolver;
+
+final class AuthActorResolver implements ActorResolver
+{
+    public function enabled(): bool
+    {
+        return (bool) config('corexis.actor.enabled', true);
+    }
+
+    public function current(): mixed
+    {
+        if (! $this->enabled()) {
+            return null;
+        }
+
+        $guard = config('corexis.actor.guard');
+
+        return auth()->guard($guard)->user();
+    }
+
+    public function id(): int|string|null
+    {
+        $actor = $this->current();
+
+        if ($actor === null || ! method_exists($actor, 'getAuthIdentifier')) {
+            return null;
+        }
+
+        $id = $actor->getAuthIdentifier();
+
+        return is_int($id) || is_string($id) ? $id : null;
+    }
+
+    public function type(): ?string
+    {
+        $actor = $this->current();
+
+        return is_object($actor) ? $actor::class : null;
+    }
+}

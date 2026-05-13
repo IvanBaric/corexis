@@ -1,0 +1,42 @@
+{
+  "name": "ivanbaric/corexis",
+  "description": "Shared context contracts and infrastructure primitives for Laravel packages.",
+  "type": "library",
+  "license": "MIT",
+  "require": {
+    "php": "^8.2",
+    "illuminate/support": "^11.0 || ^12.0",
+    "illuminate/contracts": "^11.0 || ^12.0",
+    "illuminate/console": "^11.0 || ^12.0"
+  },
+  "autoload": {
+    "psr-4": {
+      "IvanBaric\\Corexis\\": "src/"
+    },
+    "files": [
+      "src/helpers.php"
+    ]
+  },
+  "autoload-dev": {
+    "psr-4": {
+      "IvanBaric\\Corexis\\Tests\\": "tests/"
+    }
+  },
+  "require-dev": {
+    "mockery/mockery": "^1.6",
+    "orchestra/testbench": "^9.0 || ^10.0",
+    "phpunit/phpunit": "^10.5 || ^11.5"
+  },
+  "extra": {
+    "laravel": {
+      "providers": [
+        "IvanBaric\\Corexis\\CorexisServiceProvider"
+      ]
+    }
+  },
+  "scripts": {
+    "test": "phpunit"
+  },
+  "minimum-stability": "stable",
+  "prefer-stable": true
+}

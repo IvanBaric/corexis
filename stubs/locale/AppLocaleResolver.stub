@@ -1,0 +1,39 @@
+<?php
+
+declare(strict_types=1);
+
+namespace App\Support\Locale;
+
+use IvanBaric\Corexis\Contracts\LocaleResolver;
+
+final class AppLocaleResolver implements LocaleResolver
+{
+    public function enabled(): bool
+    {
+        return (bool) config('corexis.locale.enabled', false);
+    }
+
+    public function current(): ?string
+    {
+        return app()->getLocale();
+    }
+
+    public function default(): ?string
+    {
+        return config('corexis.locale.default');
+    }
+
+    public function fallback(): ?string
+    {
+        return config('corexis.locale.fallback');
+    }
+
+    public function available(): array
+    {
+        return array_values(array_unique(array_filter([
+            $this->current(),
+            $this->default(),
+            $this->fallback(),
+        ])));
+    }
+}
