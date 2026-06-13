@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace IvanBaric\Corexis;
 
 use Illuminate\Support\ServiceProvider;
+use Illuminate\Support\Facades\Blade;
 use IvanBaric\Corexis\Console\InstallCorexisCommand;
 use IvanBaric\Corexis\Contracts\ActorResolver;
 use IvanBaric\Corexis\Contracts\LocaleResolver;
@@ -52,6 +53,8 @@ class CorexisServiceProvider extends ServiceProvider
 
     public function boot(): void
     {
+        Blade::anonymousComponentPath(__DIR__.'/../resources/views/components');
+
         if (! $this->app->runningInConsole()) {
             return;
         }
