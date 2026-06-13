@@ -40,7 +40,7 @@ class InstallCorexisCommand extends Command
 
         if ($this->option('velora')) {
             $this->line('2. Set corexis.tenancy.enabled to true.');
-            $this->line('3. Set corexis.tenancy.resolver to App\\Support\\Tenancy\\CurrentTeamResolver::class.');
+            $this->line('3. Set corexis.tenancy.resolver to your host application TenantResolver class.');
             $this->line('4. Ensure the host application provides team() and current_team_id().');
         } else {
             $this->line('2. Keep tenancy disabled or set corexis.tenancy.resolver to your app resolver.');
