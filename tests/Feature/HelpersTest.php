@@ -24,7 +24,8 @@ class HelpersTest extends TestCase
 
     public function test_corexis_locale_code_returns_locale(): void
     {
-        $this->app->instance(LocaleResolver::class, new class implements LocaleResolver {
+        $this->app->instance(LocaleResolver::class, new class implements LocaleResolver
+        {
             public function enabled(): bool
             {
                 return true;
@@ -56,7 +57,8 @@ class HelpersTest extends TestCase
 
     public function test_corexis_actor_id_returns_actor_id(): void
     {
-        $this->app->instance(ActorResolver::class, new class implements ActorResolver {
+        $this->app->instance(ActorResolver::class, new class implements ActorResolver
+        {
             public function enabled(): bool
             {
                 return true;

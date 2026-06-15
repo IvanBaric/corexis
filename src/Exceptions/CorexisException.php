@@ -6,6 +6,4 @@ namespace IvanBaric\Corexis\Exceptions;
 
 use RuntimeException;
 
-class CorexisException extends RuntimeException
-{
-}
+class CorexisException extends RuntimeException {}

@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace IvanBaric\Corexis;
 
-use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Facades\Blade;
+use Illuminate\Support\ServiceProvider;
 use IvanBaric\Corexis\Console\InstallCorexisCommand;
 use IvanBaric\Corexis\Contracts\ActorResolver;
 use IvanBaric\Corexis\Contracts\LocaleResolver;
