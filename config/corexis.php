@@ -11,7 +11,7 @@ return [
     'tenancy' => [
         'enabled' => env('COREXIS_TENANCY_ENABLED', false),
         'resolver' => NullTenantResolver::class,
-        'id_column' => env('COREXIS_TENANT_ID_COLUMN', 'tenant_id'),
+        'id_column' => env('COREXIS_TENANT_ID_COLUMN', 'team_id'),
         'uuid_column' => env('COREXIS_TENANT_UUID_COLUMN', 'tenant_uuid'),
         'type_column' => env('COREXIS_TENANT_TYPE_COLUMN', 'tenant_type'),
         'fail_when_unresolved' => env('COREXIS_TENANCY_FAIL_WHEN_UNRESOLVED', false),
@@ -43,5 +43,14 @@ return [
             'system',
             'backfill',
         ],
+    ],
+
+    'authorization' => [
+        /*
+         * Keep false while packages transition to Corexis authorization so
+         * existing apps without registered Gates/Velora permissions do not
+         * start failing writes. Set true in security-hardened apps.
+         */
+        'fail_when_missing' => env('COREXIS_AUTHORIZATION_FAIL_WHEN_MISSING', false),
     ],
 ];

@@ -46,7 +46,7 @@ When enabled, configure the resolver:
 'tenancy' => [
     'enabled' => true,
     'resolver' => App\Support\Tenancy\CurrentTeamResolver::class,
-    'id_column' => 'tenant_id',
+    'id_column' => 'team_id',
 ],
 ```
 
@@ -137,7 +137,7 @@ class Post extends Model
 }
 ```
 
-The trait uses `config('corexis.tenancy.id_column')`, does not overwrite an existing tenant value, and does not add a global scope by default.
+The trait uses `config('corexis.tenancy.id_column')`, which defaults to `team_id` in the IvanBaric ecosystem. It does not overwrite an existing tenant value, and does not add a global scope by default.
 
 To query explicitly:
 
@@ -160,6 +160,30 @@ return ActionResult::error('Could not save.', 'validation_failed', [
     'field' => 'name',
 ]);
 ```
+
+It exposes `success`, `message`, `data`, `code`, and `errors`. The third positional argument remains legacy-compatible `data`; new code should use named arguments when returning validation or business-rule errors:
+
+```php
+return ActionResult::error(
+    message: __('Provjerite unesene podatke.'),
+    code: 'validation_failed',
+    errors: ['name' => [__('Naziv je obavezan.')]],
+);
+```
+
+## Domain Events
+
+Domain events can implement `IvanBaric\Corexis\Contracts\Events\DomainEvent` as a shared marker for package listeners and subscribers.
+
+The ecosystem write flow is:
+
+```text
+Livewire Component -> Livewire Form Object -> Action -> ActionResult -> Domain Event -> Listener
+```
+
+See `docs/action-result-events.md` for the event and `ActionResult` standard.
+
+See `docs/ecosystem-architecture.md` for the full IvanBaric package architecture standard, package boundaries, Action rules, Form Object rules, and listener-based integration pattern.
 
 ## Package Integration
 

@@ -18,7 +18,7 @@ trait BelongsToTenant
                 return;
             }
 
-            $column = (string) config('corexis.tenancy.id_column', 'tenant_id');
+            $column = (string) config('corexis.tenancy.id_column', 'team_id');
 
             if ($model->getAttribute($column) !== null) {
                 return;
@@ -56,6 +56,6 @@ trait BelongsToTenant
             return $query;
         }
 
-        return $query->where((string) config('corexis.tenancy.id_column', 'tenant_id'), $tenantId);
+        return $query->where((string) config('corexis.tenancy.id_column', 'team_id'), $tenantId);
     }
 }

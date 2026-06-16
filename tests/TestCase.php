@@ -69,6 +69,7 @@ abstract class TestCase extends Orchestra
 
         Schema::create('tenant_models', function (Blueprint $table): void {
             $table->id();
+            $table->unsignedBigInteger('team_id')->nullable();
             $table->unsignedBigInteger('tenant_id')->nullable();
             $table->string('name');
             $table->timestamps();

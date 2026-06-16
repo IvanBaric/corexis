@@ -54,6 +54,7 @@ class CorexisServiceProvider extends ServiceProvider
     public function boot(): void
     {
         Blade::anonymousComponentPath(__DIR__.'/../resources/views/components');
+        $this->loadTranslationsFrom(__DIR__.'/../lang', 'corexis');
 
         if (! $this->app->runningInConsole()) {
             return;
@@ -62,6 +63,10 @@ class CorexisServiceProvider extends ServiceProvider
         $this->publishes([
             __DIR__.'/../config/corexis.php' => config_path('corexis.php'),
         ], 'corexis-config');
+
+        $this->publishes([
+            __DIR__.'/../lang' => lang_path('vendor/corexis'),
+        ], 'corexis-translations');
 
         $this->commands([
             InstallCorexisCommand::class,

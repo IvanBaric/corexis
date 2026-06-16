@@ -9,18 +9,19 @@ final readonly class ActionResult
     public function __construct(
         public bool $success,
         public string $message,
-        public array $data = [],
+        public mixed $data = [],
         public ?string $code = null,
+        public array $errors = [],
     ) {}
 
-    public static function success(string $message = 'Uspješno.', array $data = []): self
+    public static function success(string $message = 'Uspješno.', mixed $data = [], ?string $code = null, array $errors = []): self
     {
-        return new self(true, $message, $data);
+        return new self(true, $message, $data, $code, $errors);
     }
 
-    public static function error(string $message = 'Došlo je do greške.', ?string $code = null, array $data = []): self
+    public static function error(string $message = 'Došlo je do greške.', ?string $code = null, mixed $data = [], array $errors = []): self
     {
-        return new self(false, $message, $data, $code);
+        return new self(false, $message, $data, $code, $errors);
     }
 
     public function failed(): bool

@@ -19,7 +19,7 @@ class BelongsToTenantTest extends TestCase
 
         $model = TenantModel::query()->create(['name' => 'Record']);
 
-        $this->assertNull($model->tenant_id);
+        $this->assertNull($model->team_id);
     }
 
     public function test_it_sets_tenant_id_when_tenancy_is_enabled(): void
@@ -30,7 +30,7 @@ class BelongsToTenantTest extends TestCase
 
         $model = TenantModel::query()->create(['name' => 'Record']);
 
-        $this->assertSame(456, $model->tenant_id);
+        $this->assertSame(456, $model->team_id);
     }
 
     public function test_it_does_not_overwrite_existing_tenant_id(): void
@@ -41,10 +41,22 @@ class BelongsToTenantTest extends TestCase
 
         $model = TenantModel::query()->create([
             'name' => 'Record',
-            'tenant_id' => 999,
+            'team_id' => 999,
         ]);
 
-        $this->assertSame(999, $model->tenant_id);
+        $this->assertSame(999, $model->team_id);
+    }
+
+    public function test_it_supports_custom_tenant_id_column(): void
+    {
+        FixedTenantResolver::$id = 456;
+        config()->set('corexis.tenancy.enabled', true);
+        config()->set('corexis.tenancy.resolver', FixedTenantResolver::class);
+        config()->set('corexis.tenancy.id_column', 'tenant_id');
+
+        $model = TenantModel::query()->create(['name' => 'Record']);
+
+        $this->assertSame(456, $model->tenant_id);
     }
 
     public function test_it_throws_when_tenant_is_required_but_unresolved(): void

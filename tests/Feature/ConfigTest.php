@@ -14,7 +14,7 @@ class ConfigTest extends TestCase
     public function test_config_is_merged(): void
     {
         $this->assertSame('system', config('corexis.source.default'));
-        $this->assertSame('tenant_id', config('corexis.tenancy.id_column'));
+        $this->assertSame('team_id', config('corexis.tenancy.id_column'));
     }
 
     public function test_config_can_be_published(): void
