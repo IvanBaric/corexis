@@ -1,0 +1,53 @@
+@layer components {
+    .cx-public-container {
+        @apply mx-auto w-full max-w-6xl;
+    }
+
+    .cx-public-container-wide {
+        @apply mx-auto w-full max-w-7xl;
+    }
+
+    .cx-public-container-article {
+        @apply mx-auto w-full max-w-4xl;
+    }
+
+    .cx-public-container-feature {
+        @apply mx-auto w-full max-w-5xl;
+    }
+
+    .cx-public-container-narrow {
+        @apply mx-auto w-full max-w-3xl;
+    }
+
+    .cx-public-copy {
+        @apply max-w-3xl;
+    }
+
+    .cx-public-copy-centered {
+        @apply mx-auto max-w-3xl;
+    }
+
+    .cx-public-copy-narrow {
+        @apply max-w-2xl;
+    }
+
+    .cx-public-copy-narrow-centered {
+        @apply mx-auto max-w-2xl;
+    }
+
+    .cx-public-copy-compact {
+        @apply max-w-xl;
+    }
+
+    .cx-public-copy-compact-centered {
+        @apply mx-auto max-w-xl;
+    }
+
+    .cx-public-mobile-bleed {
+        @apply -mx-6 sm:mx-0;
+    }
+
+    .cx-public-mobile-bleed-md {
+        @apply -mx-6 md:mx-0;
+    }
+}

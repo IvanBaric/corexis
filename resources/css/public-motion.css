@@ -1,0 +1,90 @@
+@keyframes cx-public-page-enter {
+    from {
+        opacity: 0;
+        transform: translateY(14px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@layer components {
+    .cx-public-page-enter {
+        animation: cx-public-page-enter 420ms ease-out both;
+    }
+
+    .cx-public-page-enter [data-scroll-reveal] {
+        opacity: 0;
+        transform: translateY(10px);
+        transition:
+            opacity 520ms ease-out,
+            transform 520ms ease-out;
+        transition-delay: var(--niva-reveal-delay, 0ms);
+        will-change: opacity, transform;
+    }
+
+    .cx-public-page-enter [data-scroll-reveal].is-visible {
+        opacity: 1;
+        transform: translateY(0);
+    }
+
+    .cx-public-page-enter main:not(:has([data-scroll-reveal])) {
+        animation: cx-public-page-enter 480ms ease-out 80ms both;
+    }
+
+    .cx-public-card-hover,
+    .cx-public-interactive {
+        @apply transition duration-200 hover:-translate-y-0.5 hover:shadow-md hover:shadow-zinc-950/10;
+    }
+
+    .cx-public-image-zoom,
+    .cx-public-image-hover {
+        @apply transition duration-500 group-hover:scale-[1.03];
+    }
+
+    .cx-public-motion-color {
+        @apply transition duration-200;
+    }
+
+    .cx-public-motion-fade {
+        @apply transition-opacity duration-200;
+    }
+
+    .cx-public-motion-icon {
+        @apply transition duration-200;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .cx-public-page-enter,
+    .cx-public-page-enter main:not(:has([data-scroll-reveal])) {
+        animation: none;
+    }
+
+    .cx-public-page-enter [data-scroll-reveal] {
+        opacity: 1;
+        transform: none;
+        transition: none;
+    }
+
+    .cx-public-card-hover,
+    .cx-public-interactive,
+    .cx-public-image-zoom,
+    .cx-public-image-hover,
+    .cx-public-motion-color,
+    .cx-public-motion-fade,
+    .cx-public-motion-icon {
+        transition: none;
+        transform: none;
+    }
+
+    .cx-public-card-hover:hover,
+    .cx-public-interactive:hover,
+    .group:hover .cx-public-image-zoom,
+    .group:hover .cx-public-image-hover,
+    .group:hover .cx-public-motion-icon {
+        transform: none !important;
+    }
+}

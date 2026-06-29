@@ -1,0 +1,41 @@
+@layer components {
+    .cx-public-border {
+        @apply ring-1 ring-zinc-200/70 dark:ring-zinc-800;
+    }
+
+    .cx-public-border-muted {
+        @apply ring-1 ring-zinc-950/5 dark:ring-white/10;
+    }
+
+    .cx-public-border-primary {
+        @apply ring-1 ring-[color:var(--niva-primary-100)] dark:ring-[color:var(--niva-primary-900)];
+    }
+
+    .cx-public-border-primary-strong {
+        @apply ring-1 ring-[color:var(--niva-primary-200)]/50 dark:ring-white/10;
+    }
+
+    .cx-public-border-inverse {
+        @apply ring-1 ring-white/70 dark:ring-white/10;
+    }
+
+    .cx-public-divider {
+        @apply border-zinc-200/70 dark:border-zinc-800;
+    }
+
+    .cx-public-divider-muted {
+        @apply border-zinc-100 dark:border-zinc-800;
+    }
+
+    .cx-public-divide {
+        @apply divide-zinc-200/80 dark:divide-zinc-800;
+    }
+
+    .cx-public-timeline-border {
+        @apply border-zinc-200 dark:border-zinc-800;
+    }
+
+    .cx-public-timeline-dot {
+        @apply bg-[color:var(--niva-primary-600)] ring-4 ring-white dark:bg-[color:var(--niva-primary-300)] dark:ring-zinc-950;
+    }
+}

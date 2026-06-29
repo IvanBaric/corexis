@@ -53,4 +53,19 @@ return [
          */
         'fail_when_missing' => env('COREXIS_AUTHORIZATION_FAIL_WHEN_MISSING', false),
     ],
+
+    'image_uploads' => [
+        'default' => [
+            'max_file_size_kb' => (int) env('COREXIS_IMAGE_UPLOAD_MAX_FILE_SIZE_KB', 3072),
+            'mimes' => ['jpg', 'jpeg', 'png', 'webp'],
+            'min_width' => null,
+            'min_height' => null,
+        ],
+    ],
+
+    'idempotency' => [
+        'enabled' => env('COREXIS_IDEMPOTENCY_ENABLED', true),
+        'table' => env('COREXIS_IDEMPOTENCY_TABLE', 'corexis_idempotency_keys'),
+        'ttl_minutes' => env('COREXIS_IDEMPOTENCY_TTL_MINUTES', 1440),
+    ],
 ];

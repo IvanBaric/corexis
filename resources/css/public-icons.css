@@ -1,0 +1,45 @@
+@layer components {
+    .cx-public-icon {
+        @apply size-5 shrink-0;
+    }
+
+    .cx-public-icon-sm {
+        @apply size-4 shrink-0;
+    }
+
+    .cx-public-icon-lg {
+        @apply size-6 shrink-0;
+    }
+
+    .cx-public-icon-xl {
+        @apply size-9 shrink-0;
+    }
+
+    .cx-public-icon-frame {
+        @apply inline-flex shrink-0 items-center justify-center rounded-full bg-[color:var(--niva-primary-50)] text-[color:var(--niva-primary-700)] ring-1 ring-[color:var(--niva-primary-100)] dark:bg-[color:var(--niva-primary-950)] dark:text-[color:var(--niva-primary-300)] dark:ring-[color:var(--niva-primary-900)];
+    }
+
+    .cx-public-icon-frame-sm {
+        @apply size-9;
+    }
+
+    .cx-public-icon-frame-md {
+        @apply size-10;
+    }
+
+    .cx-public-icon-frame-lg {
+        @apply size-12;
+    }
+
+    .cx-public-icon-frame-xl {
+        @apply size-14;
+    }
+
+    .cx-public-icon-action {
+        @apply size-4 shrink-0 transition duration-200;
+    }
+
+    .cx-public-icon-muted {
+        @apply text-zinc-400 transition duration-200 group-hover:text-[color:var(--niva-primary-700)] dark:text-zinc-500 dark:group-hover:text-[color:var(--niva-primary-300)];
+    }
+}

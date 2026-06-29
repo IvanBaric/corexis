@@ -1,0 +1,33 @@
+@layer components {
+    .cx-public-badge {
+        @apply inline-flex max-w-full items-center gap-2 rounded-full bg-[color:var(--niva-primary-50)] px-3 py-1.5 text-xs font-semibold leading-4 text-[color:var(--niva-primary-700)] ring-1 ring-[color:var(--niva-primary-100)] dark:bg-[color:var(--niva-primary-950)] dark:text-[color:var(--niva-primary-300)] dark:ring-[color:var(--niva-primary-900)];
+    }
+
+    .cx-public-badge-sm {
+        @apply inline-flex max-w-full items-center gap-1.5 rounded-full bg-[color:var(--niva-primary-50)] px-2.5 py-1 text-xs font-semibold leading-4 text-[color:var(--niva-primary-700)] ring-1 ring-[color:var(--niva-primary-100)] dark:bg-[color:var(--niva-primary-950)] dark:text-[color:var(--niva-primary-300)] dark:ring-[color:var(--niva-primary-900)];
+    }
+
+    .cx-public-badge-muted {
+        @apply inline-flex max-w-full items-center gap-2 rounded-full bg-white/85 px-2.5 py-1.5 text-sm leading-5 text-zinc-500 ring-1 ring-zinc-950/10 backdrop-blur transition dark:bg-zinc-900/85 dark:text-zinc-300 dark:ring-white/10;
+    }
+
+    .cx-public-badge-muted-sm {
+        @apply inline-flex max-w-full items-center gap-1.5 rounded-full bg-zinc-50 px-2.5 py-1 text-xs font-semibold leading-4 text-zinc-500 ring-1 ring-zinc-950/5 dark:bg-zinc-900 dark:text-zinc-400 dark:ring-white/10;
+    }
+
+    .cx-public-badge-inverse {
+        @apply inline-flex max-w-full items-center gap-2 rounded-full bg-white/95 px-3 py-1.5 text-xs font-semibold leading-4 text-zinc-950 shadow-sm shadow-zinc-950/10 ring-1 ring-white/80 backdrop-blur-sm dark:bg-zinc-950/95 dark:text-white dark:shadow-black/30 dark:ring-white/10;
+    }
+
+    .cx-public-badge-solid {
+        @apply inline-flex max-w-full items-center gap-2 rounded-full bg-[color:var(--niva-primary-700)] px-3 py-1.5 text-xs font-semibold leading-4 text-white shadow-sm shadow-[color:var(--niva-primary-900)]/15 dark:bg-[color:var(--niva-primary-300)] dark:text-zinc-950;
+    }
+
+    .cx-public-badge-action {
+        @apply cursor-pointer transition duration-200 hover:bg-[color:var(--niva-primary-100)] hover:text-[color:var(--niva-primary-900)] dark:hover:bg-[color:var(--niva-primary-900)] dark:hover:text-white;
+    }
+
+    .cx-public-badge-close {
+        @apply -mr-1 inline-flex size-5 shrink-0 cursor-pointer items-center justify-center rounded-full transition hover:bg-[color:var(--niva-primary-100)] hover:text-[color:var(--niva-primary-900)] disabled:cursor-wait disabled:opacity-60 dark:hover:bg-[color:var(--niva-primary-900)] dark:hover:text-white;
+    }
+}

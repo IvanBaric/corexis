@@ -28,6 +28,7 @@ Corexis may provide:
 - shared resolver contracts for tenant, actor, locale, and source context
 - model-agnostic concerns and helpers
 - architecture documentation
+- reusable package and public UI standards documentation
 
 Corexis must not depend on:
 
@@ -36,6 +37,14 @@ Corexis must not depend on:
 - Velora, Pages, Blog, Gallery, SEO, Audit, Billing, or other domain packages
 - package-specific database tables
 - UI packages
+
+## Public UI Typography Standard
+
+Reusable public website layouts should follow the Corexis public Tailwind typography roles documented in `docs/public-ui-typography.md`.
+
+The standard rule is: choose text size by semantic role, not by individual layout variation. Section titles, section descriptions, item titles, item descriptions, meta text, lead text, CTA text, and featured titles should keep consistent Tailwind classes across comparable layout variants.
+
+Do not introduce a new text size in a package layout unless it represents a new documented text role. If a new role is needed, update `docs/public-ui-typography.md` first.
 
 ## Action Standard
 
@@ -162,6 +171,194 @@ Form objects must not:
 - call unrelated packages
 - contain Flux UI logic
 
+## Livewire Security Standard
+
+The ecosystem standard remains Livewire 3. Do not upgrade package UI to Livewire 4 as part of security hardening.
+
+Livewire components should treat all public properties, form data, and action parameters as untrusted input. Livewire checksum protection is useful framework protection, but package code should still re-authorize and re-resolve models before writing.
+
+Use `#[Locked]` for server-owned state:
+
+- route or model identity such as `uuid`, `post`, `page`, `gallery`, `section`
+- mount-only configuration such as model class, model key, collection, context, redirect target, label options
+- modal pending identifiers that are set by server methods and later confirmed
+- read-only display state that should not be changed by the browser
+
+Do not lock user-editable form state:
+
+- text inputs
+- selected options
+- uploads
+- search/filter values
+- sort direction where the component validates an allowlist
+
+Preferred component pattern:
+
+```php
+use Livewire\Attributes\Locked;
+
+final class GalleryEdit extends Component
+{
+    #[Locked]
+    public string $uuid;
+
+    #[Locked]
+    public Gallery $gallery;
+
+    public GalleryForm $form;
+}
+```
+
+Livewire components should:
+
+- authorize direct page access in `mount()` or route middleware
+- call Actions for writes
+- let Actions authorize again before writing
+- re-query models inside Actions or component methods using tenant-scoped queries
+- validate allowlists for dynamic sort, filter, tab, status, and action names
+- never trust hidden inputs or public properties for tenant, actor, role, paid access, or ownership
+- keep secrets, tokens, payment provider state, and signed payloads out of public Livewire state
+- validate uploads server-side before passing files to Actions
+
+Direct page access still needs backend protection. Use route middleware, policies, `corexis_authorize()`, or equivalent package guards. Hiding buttons in Blade is only UX.
+
+## UUID and Tenant Scope Standard
+
+IvanBaric packages should use numeric database IDs as internal implementation details and UUIDs as public identifiers.
+
+Use UUIDs for:
+
+- route model binding
+- Livewire action parameters
+- Blade row keys where practical
+- browser-facing edit/delete/reorder/attach/detach calls
+- API payloads
+- domain events that need a stable external identifier
+
+Do not use browser-provided numeric IDs for meaningful state-changing operations when the model has a UUID. Numeric IDs may still exist as primary keys because Laravel, Spatie Media Library, pivots, and existing package schemas commonly depend on them.
+
+Preferred migration shape:
+
+```php
+$table->id();
+$table->uuid('uuid')->unique();
+$table->foreignId('team_id')->nullable()->index();
+```
+
+Preferred model shape:
+
+```php
+public function getRouteKeyName(): string
+{
+    return 'uuid';
+}
+```
+
+Actions and Livewire components should resolve browser-provided UUIDs through tenant-scoped queries:
+
+```php
+$page = Page::query()
+    ->forTeam(corexis_tenant_id())
+    ->where('uuid', $uuid)
+    ->firstOrFail();
+```
+
+The ecosystem default tenant column remains `team_id`. In admin contexts, list queries and write lookups should both scope by the current Corexis tenant/team. A hidden button, locked public property, or UUID alone is not sufficient isolation.
+
+Pivots and append-only log tables may use nullable UUID columns when they do not have a dedicated model lifecycle. Dedicated domain/event models should generate UUIDs on create, guarded with `Schema::hasColumn()` for backwards compatibility.
+
+## Corexis Data Integrity Standard
+
+Application code should validate intent, but the database must protect invariants that must never be duplicated.
+
+Use database constraints for:
+
+- public identifiers such as `uuid`
+- tenant-scoped slugs such as `team_id + slug`
+- unique machine keys such as permission codes, plan keys, language codes, and setting keys
+- polymorphic attachment uniqueness such as `taxonomy_item_id + taxonomyable_type + taxonomyable_id`
+- provider idempotency keys such as payment provider references and subscription identifiers
+- one-owned-resource rules such as one gallery per owner and collection
+- period usage rows such as owner, usage key, period start, and period end
+
+Use Corexis idempotency for externally repeatable operations:
+
+- payment redirects and payment confirmation
+- webhook processing
+- external API writes
+- installer/sync steps that may be retried
+- queue jobs that can be delivered more than once
+
+Corexis provides:
+
+- `corexis_idempotency()`
+- `IvanBaric\Corexis\Support\IdempotencyStore`
+- `corexis_idempotency_keys` migration
+
+Preferred idempotency shape:
+
+```php
+return corexis_idempotency()->run(
+    scope: 'billing',
+    operation: 'payment_attempt.confirm',
+    idempotencyKey: $request->header('Idempotency-Key'),
+    callback: fn (): ActionResult => $action->handle(...),
+);
+```
+
+Rules:
+
+- The idempotency key must come from a stable external identifier when possible, such as a Stripe event id, provider payment id, webhook id, or client-generated UUID.
+- Use a scoped unique key: `scope + operation + idempotency_key`.
+- Store only safe JSON-serializable result summaries. Do not persist secrets, provider signatures, tokens, or whole model payloads as idempotency result data.
+- Replayed requests should return the stored `ActionResult` and must not dispatch success domain events again.
+- Use idempotency for retryable external workflows, not every normal admin form save.
+
+Use transaction row locks for read-modify-write workflows where two requests must not update the same business state at the same time:
+
+- billing payment confirmation
+- subscription lifecycle changes
+- plan usage recording and reset
+- status transitions
+- media reorder/delete/upload workflows
+- content reorder and toggle workflows
+
+Preferred migration examples:
+
+```php
+$table->uuid('uuid')->unique();
+$table->unique(['team_id', 'slug']);
+$table->unique(['provider', 'provider_reference']);
+```
+
+Preferred transaction locking example:
+
+```php
+DB::transaction(function () use ($id): void {
+    $model = Model::query()
+        ->whereKey($id)
+        ->lockForUpdate()
+        ->firstOrFail();
+
+    $model->forceFill([...])->save();
+});
+```
+
+Rules:
+
+- PHP validation and Actions should check expected business failures before writes.
+- Database constraints are still required for race conditions and duplicate requests.
+- Use `lockForUpdate()` inside the transaction, not before it.
+- Lock the row before calculating derived values such as toggles, counters, usage, expiry dates, and order positions.
+- Do not use pessimistic locks for ordinary long-running admin forms. Use optimistic locking with `lock_version` for edit screens.
+- Do not rely on Livewire, hidden inputs, disabled buttons, or frontend state for uniqueness.
+- Keep constraints tenant-aware when a model belongs to a tenant.
+- Name composite constraints when the generated name may be too long or needs to be stable.
+- Prefer idempotency keys for payment/webhook/provider workflows.
+- Append-only audit/event tables should have UUIDs and indexes, but only unique provider event keys when the source provides a stable event identifier.
+
+Expected duplicate/conflict failures should be converted to `ActionResult::error(...)` in Actions where the package owns the write workflow. Unexpected constraint violations may still throw.
+
 ## Package Boundaries
 
 Package responsibilities:
@@ -248,6 +445,57 @@ Package permission definitions should use stable machine codes and translatable 
 When Velora is installed, its roles and permissions layer can answer Laravel Gate checks for these permission codes. Packages should still call Laravel Gate/Corexis authorization helpers and must not call Velora directly.
 
 For backwards compatibility, Corexis treats a dotted permission ability as missing until it is registered in the permission store, such as Velora's `permission_items.code`. This keeps packages usable before a host app runs permission synchronization. After synchronization, the same `corexis_authorize()` and `authorizeAction()` calls become strict authorization checks.
+
+## Concurrency Standard
+
+Editable admin models should use optimistic locking when concurrent edits can overwrite user work.
+
+Preferred database column:
+
+```php
+$table->unsignedInteger('lock_version')->default(0);
+```
+
+Preferred model pattern:
+
+```php
+use IvanBaric\Corexis\Concerns\HasLockVersion;
+
+class Page extends Model
+{
+    use HasLockVersion;
+}
+```
+
+Preferred Action pattern:
+
+```php
+use IvanBaric\Corexis\Concerns\UsesOptimisticLocking;
+
+final class UpdatePageAction
+{
+    use UsesOptimisticLocking;
+
+    public function handle(Page $page, array $data): ActionResult
+    {
+        $expectedLockVersion = $this->pullExpectedLockVersion($data);
+
+        $saved = DB::transaction(fn (): bool => $this->saveWithOptimisticLock(
+            model: $page,
+            attributes: $data,
+            expectedLockVersion: $expectedLockVersion,
+        ));
+
+        if (! $saved) {
+            return ActionResult::fromCorexis($this->staleModelResult());
+        }
+    }
+}
+```
+
+Livewire forms should store the model's current `lock_version` when filling the form and send it back to the Action. If another user saves first, the Action returns `conflict.stale_model` and must not dispatch a success domain event.
+
+For backwards compatibility, `lock_version` is optional. When no expected version is provided, Actions keep the existing save behavior. Existing host applications need an upgrade migration before strict conflict detection is active on already-installed tables.
 
 ## Compatibility
 

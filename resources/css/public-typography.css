@@ -1,0 +1,113 @@
+@layer components {
+    .cx-public-hero-title {
+        @apply text-4xl font-semibold leading-tight md:text-5xl;
+    }
+
+    .cx-public-hero-description {
+        @apply text-lg leading-8;
+    }
+
+    .cx-public-section-title {
+        @apply text-3xl font-semibold leading-tight;
+    }
+
+    .cx-public-section-description {
+        @apply text-base leading-7;
+    }
+
+    .cx-public-eyebrow {
+        @apply text-sm font-semibold uppercase tracking-wide;
+    }
+
+    .cx-public-featured-title {
+        @apply text-2xl font-semibold leading-8;
+    }
+
+    .cx-public-item-title {
+        @apply text-lg font-semibold leading-7;
+    }
+
+    .cx-public-item-title-compact {
+        @apply text-base font-semibold leading-6;
+    }
+
+    .cx-public-item-text {
+        @apply text-sm leading-6;
+    }
+
+    .cx-public-body {
+        @apply text-base leading-7;
+    }
+
+    .cx-public-body-compact {
+        @apply text-[15px] leading-7;
+    }
+
+    .cx-public-lead {
+        @apply text-lg leading-8;
+    }
+
+    .cx-public-meta {
+        @apply text-sm leading-5;
+    }
+
+    .cx-public-meta-strong {
+        @apply text-sm font-semibold leading-5;
+    }
+
+    .cx-public-small {
+        @apply text-xs leading-4;
+    }
+
+    .cx-public-small-strong {
+        @apply text-xs font-semibold leading-4;
+    }
+
+    .cx-public-cta {
+        @apply text-sm font-semibold leading-5;
+    }
+
+    .cx-public-stat-value {
+        @apply text-3xl font-semibold tracking-tight;
+    }
+
+    .cx-public-stat-value-medium {
+        @apply text-2xl font-semibold tracking-tight;
+    }
+
+    .cx-public-stat-value-compact {
+        @apply text-xl font-semibold leading-6;
+    }
+
+    .cx-public-date-month {
+        @apply text-xs font-semibold leading-none;
+    }
+
+    .cx-public-date-day {
+        @apply text-2xl font-semibold leading-none tracking-tight;
+    }
+
+    .cx-public-quote {
+        @apply text-base font-medium leading-8;
+    }
+
+    .cx-public-quote-compact {
+        @apply text-sm font-medium leading-7;
+    }
+
+    .cx-public-quote-medium {
+        @apply text-[15px] font-medium leading-7;
+    }
+
+    .cx-public-quote-featured {
+        @apply text-xl font-medium leading-9 tracking-tight;
+    }
+
+    .cx-public-quote-mark {
+        @apply text-5xl font-semibold leading-none;
+    }
+
+    .cx-public-avatar-initial {
+        @apply text-lg font-semibold;
+    }
+}

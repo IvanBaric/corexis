@@ -14,7 +14,7 @@ class AuthorizesActionsTest extends TestCase
 {
     public function test_authorize_action_returns_null_when_allowed(): void
     {
-        Gate::define('corexis.allowed', fn (): bool => true);
+        Gate::define('corexis.allowed', fn ($user = null): bool => true);
 
         $action = new class {
             use AuthorizesActions;
@@ -30,7 +30,7 @@ class AuthorizesActionsTest extends TestCase
 
     public function test_authorize_action_returns_action_result_when_denied(): void
     {
-        Gate::define('corexis.denied', fn (): bool => false);
+        Gate::define('corexis.denied', fn ($user = null): bool => false);
 
         $action = new class {
             use AuthorizesActions;
@@ -51,14 +51,14 @@ class AuthorizesActionsTest extends TestCase
 
     public function test_corexis_can_uses_laravel_gate(): void
     {
-        Gate::define('corexis.ui', fn (): bool => true);
+        Gate::define('corexis.ui', fn ($user = null): bool => true);
 
         $this->assertTrue(corexis_can('corexis.ui'));
     }
 
     public function test_corexis_authorize_throws_when_denied(): void
     {
-        Gate::define('corexis.throw', fn (): bool => false);
+        Gate::define('corexis.throw', fn ($user = null): bool => false);
 
         $this->expectException(AuthorizationException::class);
 

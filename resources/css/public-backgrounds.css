@@ -1,0 +1,45 @@
+@layer components {
+    .cx-public-page-bg {
+        @apply bg-white text-zinc-950 dark:bg-zinc-950 dark:text-white;
+    }
+
+    .cx-public-page-bg-muted {
+        @apply bg-zinc-50 text-zinc-950 dark:bg-zinc-950 dark:text-white;
+    }
+
+    .cx-public-page-bg-warm {
+        @apply bg-[#fbfaf7] text-zinc-950 dark:bg-zinc-950 dark:text-white;
+    }
+
+    .cx-public-page-bg-warm-translucent {
+        @apply bg-[#fbfaf7]/90 backdrop-blur dark:bg-zinc-950/90;
+    }
+
+    .cx-public-section-bg {
+        @apply bg-white dark:bg-zinc-950;
+    }
+
+    .cx-public-section-bg-muted {
+        @apply bg-zinc-50 dark:bg-zinc-900;
+    }
+
+    .cx-public-section-bg-warm {
+        @apply bg-[#fbfaf7] dark:bg-zinc-950;
+    }
+
+    .cx-public-section-bg-inverse {
+        @apply bg-zinc-950 text-white;
+    }
+
+    .cx-public-panel-bg {
+        @apply bg-white dark:bg-zinc-900;
+    }
+
+    .cx-public-panel-bg-muted {
+        @apply bg-zinc-50 dark:bg-zinc-900;
+    }
+
+    .cx-public-panel-bg-warm {
+        @apply bg-[#fbfaf7] dark:bg-zinc-900;
+    }
+}

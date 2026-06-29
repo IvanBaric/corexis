@@ -2,14 +2,16 @@
 
 declare(strict_types=1);
 
-use IvanBaric\Corexis\Support\CurrentActor;
-use IvanBaric\Corexis\Support\CurrentLocale;
-use IvanBaric\Corexis\Support\CurrentSource;
-use IvanBaric\Corexis\Support\CurrentTenant;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Schema;
 use IvanBaric\Corexis\Data\ActionResult;
+use IvanBaric\Corexis\Support\CurrentActor;
+use IvanBaric\Corexis\Support\CurrentLocale;
+use IvanBaric\Corexis\Support\CurrentSource;
+use IvanBaric\Corexis\Support\CurrentTenant;
+use IvanBaric\Corexis\Support\IdempotencyStore;
+use IvanBaric\Corexis\Support\ImageUploadPolicy;
 
 if (! function_exists('corexis_tenant')) {
     function corexis_tenant(): CurrentTenant
@@ -57,6 +59,20 @@ if (! function_exists('corexis_source')) {
     function corexis_source(): string
     {
         return app(CurrentSource::class)->current();
+    }
+}
+
+if (! function_exists('corexis_idempotency')) {
+    function corexis_idempotency(): IdempotencyStore
+    {
+        return app(IdempotencyStore::class);
+    }
+}
+
+if (! function_exists('corexis_image_upload')) {
+    function corexis_image_upload(): ImageUploadPolicy
+    {
+        return app(ImageUploadPolicy::class);
     }
 }
 

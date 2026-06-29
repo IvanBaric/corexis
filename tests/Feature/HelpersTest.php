@@ -9,6 +9,7 @@ use IvanBaric\Corexis\Contracts\LocaleResolver;
 use IvanBaric\Corexis\Contracts\SourceResolver;
 use IvanBaric\Corexis\Contracts\TenantResolver;
 use IvanBaric\Corexis\Resolvers\StaticSourceResolver;
+use IvanBaric\Corexis\Support\IdempotencyStore;
 use IvanBaric\Corexis\Tests\Fixtures\Resolvers\FixedTenantResolver;
 use IvanBaric\Corexis\Tests\TestCase;
 
@@ -91,5 +92,10 @@ class HelpersTest extends TestCase
         $this->assertSame('admin', corexis_source());
 
         StaticSourceResolver::reset();
+    }
+
+    public function test_corexis_idempotency_returns_store(): void
+    {
+        $this->assertInstanceOf(IdempotencyStore::class, corexis_idempotency());
     }
 }

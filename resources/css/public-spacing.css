@@ -1,0 +1,81 @@
+@layer components {
+    .cx-public-section-header {
+        @apply flex flex-col gap-5 sm:flex-row sm:items-start sm:justify-between;
+    }
+
+    .cx-public-section-header-copy {
+        @apply max-w-3xl;
+    }
+
+    .cx-public-section-header-actions {
+        @apply flex shrink-0 flex-wrap items-center gap-2 sm:justify-end sm:pt-1;
+    }
+
+    .cx-public-section-content {
+        @apply mt-10;
+    }
+
+    .cx-public-section-content-spacious {
+        @apply mt-12;
+    }
+
+    .cx-public-section-content-compact {
+        @apply mt-8;
+    }
+
+    .cx-public-grid {
+        @apply grid gap-5;
+    }
+
+    .cx-public-grid-compact {
+        @apply grid gap-4;
+    }
+
+    .cx-public-grid-tight {
+        @apply grid gap-3;
+    }
+
+    .cx-public-grid-loose {
+        @apply grid gap-6;
+    }
+
+    .cx-public-stack {
+        @apply space-y-4;
+    }
+
+    .cx-public-stack-compact {
+        @apply space-y-3;
+    }
+
+    .cx-public-stack-loose {
+        @apply space-y-5;
+    }
+
+    .cx-public-stack-editorial {
+        @apply space-y-10 lg:space-y-12;
+    }
+
+    .cx-public-stack-showcase {
+        @apply space-y-12 lg:space-y-14;
+    }
+
+    .cx-public-card-padding {
+        @apply p-5;
+    }
+
+    .cx-public-card-padding-compact {
+        @apply p-4;
+    }
+
+    .cx-public-card-padding-loose {
+        @apply p-6;
+    }
+
+    .cx-public-band-padding {
+        @apply p-4 sm:p-6;
+    }
+
+    .cx-public-band-padding-loose {
+        @apply p-4 sm:p-6 lg:p-8;
+    }
+}

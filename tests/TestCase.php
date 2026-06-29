@@ -58,6 +58,7 @@ abstract class TestCase extends Orchestra
     private function createSchema(): void
     {
         Schema::dropIfExists('tenant_models');
+        Schema::dropIfExists('corexis_idempotency_keys');
         Schema::dropIfExists('users');
 
         Schema::create('users', function (Blueprint $table): void {
@@ -73,6 +74,24 @@ abstract class TestCase extends Orchestra
             $table->unsignedBigInteger('tenant_id')->nullable();
             $table->string('name');
             $table->timestamps();
+        });
+
+        Schema::create('corexis_idempotency_keys', function (Blueprint $table): void {
+            $table->id();
+            $table->uuid('uuid')->unique();
+            $table->string('scope')->index();
+            $table->string('operation')->index();
+            $table->string('idempotency_key');
+            $table->string('status')->index();
+            $table->string('response_message')->nullable();
+            $table->string('response_code')->nullable();
+            $table->json('response_data')->nullable();
+            $table->json('response_errors')->nullable();
+            $table->timestamp('completed_at')->nullable()->index();
+            $table->timestamp('expires_at')->nullable()->index();
+            $table->timestamps();
+
+            $table->unique(['scope', 'operation', 'idempotency_key'], 'corexis_idempotency_scope_operation_key_unique');
         });
     }
 }

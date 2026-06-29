@@ -121,7 +121,33 @@ corexis_locale_code();
 corexis_actor();
 corexis_actor_id();
 corexis_source();
+corexis_image_upload();
 ```
+
+## Image Upload Policy
+
+Corexis defines one default image upload policy used across packages:
+
+```php
+'image_uploads' => [
+    'default' => [
+        'max_file_size_kb' => (int) env('COREXIS_IMAGE_UPLOAD_MAX_FILE_SIZE_KB', 3072),
+        'mimes' => ['jpg', 'jpeg', 'png', 'webp'],
+        'min_width' => null,
+        'min_height' => null,
+    ],
+],
+```
+
+Packages should use the shared helper instead of hardcoding upload limits:
+
+```php
+corexis_image_upload()->rules();
+corexis_image_upload()->helpText();
+corexis_image_upload()->maxFileSizeKb();
+```
+
+By default, image uploads are limited to 3 MB. Change `COREXIS_IMAGE_UPLOAD_MAX_FILE_SIZE_KB` in the host project when the whole site should allow a different image size.
 
 ## BelongsToTenant
 
@@ -171,6 +197,25 @@ return ActionResult::error(
 );
 ```
 
+## Idempotency
+
+Corexis includes a small idempotency store for retryable external writes such as payments, webhooks, API writes, and queue jobs.
+
+Run the Corexis migrations to create the `corexis_idempotency_keys` table. Packages can then wrap ActionResult-based work:
+
+```php
+return corexis_idempotency()->run(
+    scope: 'billing',
+    operation: 'payment_attempt.confirm',
+    idempotencyKey: $request->header('Idempotency-Key'),
+    callback: fn (): ActionResult => $action->handle(...),
+);
+```
+
+The first request runs the callback and stores a safe result summary. A repeated request with the same `scope`, `operation`, and key returns the stored `ActionResult` without running the callback or dispatching success events again.
+
+Use stable keys such as provider event IDs, webhook IDs, payment IDs, or client-generated UUIDs. Do not store secrets or whole model payloads as idempotency result data.
+
 ## Domain Events
 
 Domain events can implement `IvanBaric\Corexis\Contracts\Events\DomainEvent` as a shared marker for package listeners and subscribers.
@@ -184,6 +229,14 @@ Livewire Component -> Livewire Form Object -> Action -> ActionResult -> Domain E
 See `docs/action-result-events.md` for the event and `ActionResult` standard.
 
 See `docs/ecosystem-architecture.md` for the full IvanBaric package architecture standard, package boundaries, Action rules, Form Object rules, and listener-based integration pattern.
+
+See `docs/public-ui-typography.md` for the public Tailwind section typography standard used by reusable website layouts.
+
+Host applications can include the shared public typography classes from Corexis:
+
+```css
+@import '../../vendor/ivanbaric/corexis/resources/css/public-typography.css';
+```
 
 ## Package Integration
 
