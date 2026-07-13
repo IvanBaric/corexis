@@ -5,12 +5,13 @@ declare(strict_types=1);
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
+use IvanBaric\Corexis\Support\CorexisConfigResolver;
 
 return new class extends Migration
 {
     public function up(): void
     {
-        $tableName = (string) config('corexis.idempotency.table', 'corexis_idempotency_keys');
+        $tableName = CorexisConfigResolver::idempotencyKeysTable();
 
         if (Schema::hasTable($tableName)) {
             return;
@@ -37,6 +38,6 @@ return new class extends Migration
 
     public function down(): void
     {
-        Schema::dropIfExists((string) config('corexis.idempotency.table', 'corexis_idempotency_keys'));
+        Schema::dropIfExists(CorexisConfigResolver::idempotencyKeysTable());
     }
 };

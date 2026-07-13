@@ -6,6 +6,7 @@ namespace IvanBaric\Corexis\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Str;
+use IvanBaric\Corexis\Support\CorexisConfigResolver;
 
 final class IdempotencyKey extends Model
 {
@@ -48,7 +49,7 @@ final class IdempotencyKey extends Model
 
     public function getTable(): string
     {
-        return (string) config('corexis.idempotency.table', 'corexis_idempotency_keys');
+        return CorexisConfigResolver::idempotencyKeysTable();
     }
 
     public function isCompleted(): bool

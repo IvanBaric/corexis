@@ -38,6 +38,14 @@ Corexis must not depend on:
 - package-specific database tables
 - UI packages
 
+## Deployment Configuration Standard
+
+Production-sensitive deployment choices must stay in configuration or shared Corexis helpers, not inside package views, Livewire components, form objects, or actions.
+
+Do not hardcode disks, drivers, buckets, external URLs, providers, AI models, queue names, or similar environment-dependent options in reusable package code. For public uploaded media, use `corexis_public_media_disk()` when storing files and `corexis_public_media_url()` when rendering stored paths.
+
+Fallbacks are allowed in config files or Corexis helpers, but they should not be duplicated across package code because the host app must be able to switch from local public storage to S3 or another configured disk without code changes.
+
 ## Public UI Typography Standard
 
 Reusable public website layouts should follow the Corexis public Tailwind typography roles documented in `docs/public-ui-typography.md`.
@@ -45,6 +53,12 @@ Reusable public website layouts should follow the Corexis public Tailwind typogr
 The standard rule is: choose text size by semantic role, not by individual layout variation. Section titles, section descriptions, item titles, item descriptions, meta text, lead text, CTA text, and featured titles should keep consistent Tailwind classes across comparable layout variants.
 
 Do not introduce a new text size in a package layout unless it represents a new documented text role. If a new role is needed, update `docs/public-ui-typography.md` first.
+
+## Public UI Media Standard
+
+Reusable public website media should follow `docs/public-ui-media.md`. That standard covers image frames, radius, hover, overlays, aspect ratios, placeholders, upload validation, media-library conversion usage, responsive images, and when public layouts may use original uploaded files.
+
+The standard rule is: public layouts should render the smallest suitable named conversion for the role, and use the original upload only for lightbox/fullscreen views or as a final fallback when a conversion is not available.
 
 ## Action Standard
 
@@ -177,6 +191,8 @@ The ecosystem standard remains Livewire 3. Do not upgrade package UI to Livewire
 
 Livewire components should treat all public properties, form data, and action parameters as untrusted input. Livewire checksum protection is useful framework protection, but package code should still re-authorize and re-resolve models before writing.
 
+Every Livewire component change must include a security pass before completion. Review public properties, action parameters, model resolution, authorization, tenant scope, and destructive/privileged modal flows. Do not treat this as an optional hardening step after the feature is done.
+
 Use `#[Locked]` for server-owned state:
 
 - route or model identity such as `uuid`, `post`, `page`, `gallery`, `section`
@@ -219,8 +235,46 @@ Livewire components should:
 - never trust hidden inputs or public properties for tenant, actor, role, paid access, or ownership
 - keep secrets, tokens, payment provider state, and signed payloads out of public Livewire state
 - validate uploads server-side before passing files to Actions
+- put the Livewire update route behind a central rate limiter such as `throttle:livewire-updates`, with the per-minute limit coming from host app configuration
+- keep Livewire temporary upload rules and throttling centralized in `config/livewire.php`, with image size limits derived from `config('corexis.image_uploads.default.max_file_size_kb')`
+
+For destructive or privileged modal flows, prefer this pattern:
+
+- `confirm...($uuid)` receives browser input, resolves the model through a tenant-scoped query, validates authorization, and sets a `#[Locked]` pending UUID/name
+- `delete`, `archive`, `restore`, `publish`, `detach`, or equivalent final action receives no direct UUID unless there is a specific reason
+- the final action re-resolves the pending UUID and authorizes again before writing
+
+Stateful Flux modals must be opened only after the server has prepared their state. Avoid `<flux:modal.trigger>` around a `wire:click` for edit/confirm modals, because the browser opens the modal before Livewire finishes replacing the previous entity data. The Livewire method should reset old state, resolve and authorize the entity, fill the form or pending UUID, then call `Flux::modal(...)->show()` or dispatch `modal-show`. The modal must reset its state on close (`x-on:close="$wire.cancel...()"`, `@cancel`, or equivalent) so closing by X, ESC, backdrop, or cancel does not leak stale state into the next opening.
 
 Direct page access still needs backend protection. Use route middleware, policies, `corexis_authorize()`, or equivalent package guards. Hiding buttons in Blade is only UX.
+
+Custom route middleware that protects a Livewire page must be reviewed for persistent middleware support. Middleware without arguments should be registered in the host app through `Livewire::addPersistentMiddleware(...)` so it is re-applied to later Livewire update requests. Middleware with arguments is not supported by Livewire persistent middleware definitions, so role/permission middleware such as `permission:*` or `role:*` must be backed by authorization inside the component, Action, policy, or domain service before any sensitive write.
+
+## Auth And Invitation Security Standard
+
+Authentication and invitation flows must always have explicit server-side rate limiting. Fortify login limits should key attempts by normalized username/email and IP address, two-factor challenges by the pending login session, and passkey attempts by credential or session plus IP address.
+
+Public invitation links must use signed URLs, short expiry, and tokens stored only as hashes. Invitation routes should have route-level IP throttling, and preview/submit handling should also have token-specific throttling so both random-token scans and repeated attacks against a real token are limited.
+
+Accepting an invitation must re-check the invitation inside a `lockForUpdate()` transaction before assigning membership or roles. Accepted, revoked, and expired invitations must not be reusable, and the role attached to the invitation must still be assignable immediately before acceptance.
+
+## Livewire CSP Standard
+
+Livewire 4 CSP-safe mode should be supported as a production hardening option, but it must not be enabled blindly. Host projects should expose it through `config('livewire.csp_safe')`, defaulting to disabled until a browser compatibility pass is complete.
+
+When writing Livewire and Alpine UI:
+
+- avoid complex inline expressions that are hard to run under strict CSP: arrow functions, template literals, spread syntax, dynamic method/property access, and large JavaScript blocks in attributes
+- move complex Alpine behavior into named methods/getters in the `x-data` object or into registered `Alpine.data()` modules
+- keep Livewire expressions simple method calls, property bindings, or validated parameter calls
+- avoid new inline `<script>` blocks unless the host project has a nonce or bundled asset strategy
+
+Before enabling strict CSP without `'unsafe-eval'`:
+
+- set `config('livewire.csp_safe')` to `true` on local or staging first
+- test critical admin and public flows in a real browser
+- check the console for CSP, Alpine, and Livewire expression errors
+- verify file uploads, modals, dropdowns, pagination, lazy sections, and any custom Alpine widgets
 
 ## UUID and Tenant Scope Standard
 
@@ -387,6 +441,34 @@ Package responsibilities:
 
 `admin-ui` must stay presentational. Do not add queries, validation, permissions, model saves, package-specific row actions, Actions, Events, or Listeners.
 
+Shared admin layout and responsiveness belong in `admin-ui`, not in each host application. Keep repeated Flux modal sizing, mobile gutters, editor overflow fixes, cursor behavior, panel/page spacing, and required-field marker styling in `packages/ivanbaric/admin-ui/resources/css/admin-ui.css`.
+
+The shared admin baseline is deliberately restrained: one visual boundary per content group, 8px ordinary surface radius, no hover movement on static cards, adaptive stat grids, common list thumbnails/empty states, and pagination only when a paginator has more than one page. Profile, security, package settings, superadmin, and tenant screens must use the same presentational primitives instead of retaining framework starter UI. Business behavior remains in the host/domain package; only the repeatable presentation belongs in `admin-ui`.
+
+When a configured editor has content/design/settings tabs, the section definition is the source of truth for both the tab and the page header. The active tab label and description should update the main header so the current task is explicit. Do not duplicate those labels in host views or leave a static entity title above every tab.
+
+Admin list and table screens must render a visible list header whenever they render rows. Use the shared `admin-list-header` class directly before the row container and keep its grid columns aligned with `admin-list-row`. This applies to pages, page sections, posts, products, taxonomies, users, audit logs, and future admin lists. Empty states can omit the header, but row-based screens must not ship without column labels.
+
+For standard admin screens, `.admin-page` is the only owner of the page gutter and `[data-flux-main]` is the only vertical scroll owner. Flux main ships with its own padding, so `admin-ui` must remove that padding when `.admin-page` is its direct child. Never stack both paddings: the duplicated vertical space creates artificial overflow and an unnecessary scrollbar on otherwise short pages.
+
+Required admin fields should not use the HTML `required` attribute when the project expects Livewire/backend validation to be shown first. Use backend validation rules, add `data-required` to the Flux control, and let `admin-ui.css` render the red visual marker on the generated Flux label. This avoids browser-native validation messages taking over before Livewire validation. Use `x-admin-ui::required-label` only for custom field markup that cannot use Flux's generated label.
+
+Mobile admin screens should avoid nested bordered cards. Admin panels should not draw an outer ring/shadow or add extra horizontal padding on small screens; the page gutter should control width. Upload controls, helper panels, and form blocks inside an existing admin panel should use shared admin-ui surface classes so small screens keep one calm visual boundary instead of multiple stacked borders.
+
+Mobile admin forms should have more vertical breathing room than desktop forms. Common form stack spacing belongs in `admin-ui.css`, not in one-off `mt-*`, `space-y-*`, or `gap-*` fixes scattered through host application views.
+
+Admin dropdowns should use Flux `variant="listbox"` by default. This includes settings dropdowns, icon pickers, filters, and ordinary form selects. A different select variant should be an intentional local design decision, not an accidental default.
+
+Primary Livewire submit actions should use `x-admin-ui::submit-button` from the shared admin-ui package. The button must use a scoped `wire:target`, disable itself during the Livewire request, keep the Flux loading indicator, and switch its label to `Spremanje...` while saving. Large admin forms should keep the primary save button inside the same `<form wire:submit="...">` as the fields being saved, including when the button is visually placed in the page header. Do not rely on external Flux submit buttons or the HTML `form` attribute for primary save flows unless there is a focused test proving the action fires. Large admin forms should also use `wire:loading.class="admin-panel-content-loading"` plus `x-admin-ui::loading-overlay` with the same `Spremanje...` text. Reusable projects must not ship save buttons that can be submitted repeatedly during the same Livewire request.
+
+When an external form target is genuinely required, reusable Blade wrappers must forward the original `$attributes` bag directly into the nested Flux component. Renamed attribute bags and inline Blade conditionals inside nested component attributes can be compiled as literal bogus attributes. Verify the rendered button contains the expected `form` and `wire:target` attributes, not only that the source Blade looks correct.
+
+Large edit forms with autosave should follow the same dirty-state pattern used by posts: locked `savedStateSnapshot`, `isDirty()` comparison, `Nema promjena za spremanje.` info toast for clean manual saves, `wire:poll.180000ms="autoSave"` for background saves, `Automatsko spremanje podataka` only after an actual autosave, and a visible last-saved timestamp with the user who made the last edit. Autosave must not make the primary save button look like it is loading.
+
+Focused onboarding/setup flows should use a reusable admin-ui layout pattern rather than a normal admin page shell. The flow should be short, one topic per step, visually stable between steps, and free of unrelated navigation. When the next step depends on required input, the button should be disabled until the step is complete and switch from neutral to primary when ready. This is UX only; backend validation remains mandatory.
+
+Local SQLite development should not use database-backed cache or sessions. Use `CACHE_STORE=file` and `SESSION_DRIVER=file` or Redis. SQLite allows only limited concurrent writes, so database cache/session writes from Livewire updates, rate limiters, and session persistence can intermittently throw `SQLSTATE[HY000]: database is locked`. Production should use Redis or a production database/cache setup instead of SQLite.
+
 `starter` must stay an installer/orchestrator. It may clone packages, configure Composer repositories, require packages, publish resources, run migrations, and run sync commands. It must not become a service layer.
 
 `sanigen` is a low-level utility. Do not add fake domain events or UI just for consistency.
@@ -445,6 +527,22 @@ Package permission definitions should use stable machine codes and translatable 
 When Velora is installed, its roles and permissions layer can answer Laravel Gate checks for these permission codes. Packages should still call Laravel Gate/Corexis authorization helpers and must not call Velora directly.
 
 For backwards compatibility, Corexis treats a dotted permission ability as missing until it is registered in the permission store, such as Velora's `permission_items.code`. This keeps packages usable before a host app runs permission synchronization. After synchronization, the same `corexis_authorize()` and `authorizeAction()` calls become strict authorization checks.
+
+## Initial Content Setup Standard
+
+Apps that generate starter website content should expose one focused setup route, preferably short and memorable, such as `/app/ai`. Avoid burying the flow under implementation-oriented paths like `/app/website/ai-content`.
+
+The initial setup middleware should guard all admin routes until the required setup is complete, with an explicit allowlist for the setup, processing, status, completion, logout, and safe support routes. If the app uses Livewire pages behind this middleware, register the middleware as Livewire persistent middleware so subsequent Livewire requests keep the same protection.
+
+Local development must have a configuration-based bypass for paid AI generation and long setup flows. The bypass belongs in config, not in temporary route edits or commented middleware.
+
+The app should deterministically create the structural shell: pages, sections, required records, ordering, and default visibility. AI should adapt text and content inside that shell based on user answers. Do not let the model invent arbitrary application structure, routes, permissions, records, or media relationships.
+
+Copy in this flow should be outcome-first and brief. Avoid bureaucratic labels such as "anketa" when a softer term like "kratki odabir" or "prilagodba" fits better. State the value in one clear sentence: the app will create pages, sections, and starter content that users can edit later. Duration should be shown as a small badge, not repeated across paragraphs.
+
+Break the setup into relaxed steps with one topic each. Typical steps are: introduction, work areas, values, participants, activities, highlights, tone of voice, and review. Keep each screen understandable in a few seconds.
+
+Required choices in setup flows should use live Livewire bindings so button state updates immediately. Use `wire:model.live` for toggles/selects and a small debounce for text fallback fields. Disabled buttons are not validation; run server-side validation before generation.
 
 ## Concurrency Standard
 
@@ -515,13 +613,12 @@ The ecosystem default tenant column is `team_id`:
     'enabled' => true,
     'resolver' => App\Support\Tenancy\CurrentTeamResolver::class,
     'id_column' => 'team_id',
-    'fail_when_unresolved' => false,
 ],
 ```
 
 Host applications may use team language in their resolver class names because the app owns the concrete tenant model. Packages should keep using Corexis tenant language and must not call app-specific `team()`, `current_team_id()`, or package-local tenant helpers directly.
 
-Existing package-local tenant/team resolvers may stay as backwards-compatible adapters, but new package code should read tenant context from Corexis.
+Package-local tenant/team resolvers should be migrated to Corexis and removed. The host application owns the single concrete tenant resolver used by every package.
 
 ## Locale Standard
 
@@ -549,6 +646,14 @@ lang/hr/*.php
 ```
 
 or `resources/lang` when that is the package's existing convention. Croatian translation files must stay UTF-8 encoded without BOM.
+
+## Transactional Email Standard
+
+Host applications should keep transactional email branding in one configuration namespace instead of hardcoding a separate color and font in every mail view. Branded emails should use the host application's name, primary color, font stack, and optional hosted web-font stylesheet, with system font fallbacks.
+
+Production email markup should be table-based with essential styles inline. Primary actions should remain usable in Outlook and restrictive webmail clients, and security-sensitive messages such as invitations should include the relevant role/context, expiration time, and a plain fallback URL below the main call to action.
+
+Email visuals should match the application while staying deliberately simpler than the web UI. The message must remain readable when web fonts, media queries, shadows, and rounded corners are ignored.
 
 Where package-local `ActionResult` classes already exist, keep compatibility adapters before changing public return types.
 

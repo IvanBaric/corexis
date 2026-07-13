@@ -22,7 +22,7 @@
     >
         <div
             class="mx-auto flex max-w-5xl flex-col gap-4 rounded-xl border border-zinc-200 bg-white/95 p-4 text-zinc-900 shadow-lg shadow-zinc-950/10 backdrop-blur-md dark:border-zinc-800 dark:bg-zinc-950/95 dark:text-white sm:flex-row sm:items-center sm:justify-between sm:gap-6"
-            style="--corexis-cookie-primary: var(--niva-primary-700, #047857); --corexis-cookie-primary-hover: var(--niva-primary-800, #065f46);"
+            style="--corexis-cookie-primary: var(--niva-primary-700, #9F2E61); --corexis-cookie-primary-hover: var(--niva-primary-800, #7F214C);"
         >
             <div class="min-w-0">
                 <p class="text-sm font-semibold leading-5">{{ $title }}</p>

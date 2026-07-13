@@ -36,6 +36,25 @@ Kartice i media frameovi koriste `rounded-xl`. Ne koristiti `rounded-2xl`, `roun
 
 `rounded-full` je dopušten za kružne ikone, avatare, male badge elemente i pill oznake. Ne koristiti ga za standardne javne CTA gumbe unutar sekcija.
 
+## Public Empty States
+
+Javne sekcije ne smiju imati vlastite ručno složene prazne blokove. Kada sekcija nema objavljiv sadržaj, koristiti Corexis komponentu:
+
+```blade
+<x-corexis::public-empty-state
+    class="cx-public-section-content"
+    icon="photo"
+    :title="__('Fotografije uskoro')"
+    :description="__('Fotografije će se prikazati ovdje kada budu spremne za objavu.')"
+/>
+```
+
+Komponenta koristi `cx-public-empty-state`, `cx-public-empty-state-icon`, `cx-public-empty-state-title` i `cx-public-empty-state-description` iz `public-surfaces.css`.
+
+Tekst mora biti neutralan za javnog posjetitelja. Ne pisati administrativne upute poput "Dodajte fotografije" ili "Dodajte logo" na javnom frontendu. Ako je potrebno uputiti korisnika što treba napraviti, ta poruka pripada admin sučelju, ne javnoj stranici.
+
+Ikona mora biti Flux/Heroicons naziv i treba odgovarati tipu sadržaja, npr. `photo` za galeriju, `cube` za radove, `newspaper` za objave, `calendar-days` za događaje.
+
 ## Sjene
 
 Standardna mirna sjena je:
@@ -114,5 +133,6 @@ Prije završetka nove javne sekcije ili layout varijante provjeriti:
 - postoje li `shadow-lg`, `shadow-2xl` ili custom sjene na običnim karticama
 - koriste li slike i media okviri isti `rounded-xl`
 - jesu li `rounded-full` elementi stvarno kružne ikone, avatari ili badge oznake
+- koristi li prazna javna sekcija `x-corexis::public-empty-state` umjesto ručnog markup-a
 
 Ako novi projekt treba drugačiji radius ili dubinu, prvo promijeniti Corexis standard, a tek zatim sekcije.

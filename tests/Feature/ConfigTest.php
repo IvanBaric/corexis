@@ -15,6 +15,7 @@ class ConfigTest extends TestCase
     {
         $this->assertSame('system', config('corexis.source.default'));
         $this->assertSame('team_id', config('corexis.tenancy.id_column'));
+        $this->assertSame(12, config('corexis.pagination.default_items'));
     }
 
     public function test_config_can_be_published(): void

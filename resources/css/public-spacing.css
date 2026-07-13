@@ -24,31 +24,31 @@
     }
 
     .cx-public-grid {
-        @apply grid gap-5;
+        @apply grid gap-6 md:gap-7;
     }
 
     .cx-public-grid-compact {
-        @apply grid gap-4;
+        @apply grid gap-5 md:gap-6;
     }
 
     .cx-public-grid-tight {
-        @apply grid gap-3;
+        @apply grid gap-4 md:gap-5;
     }
 
     .cx-public-grid-loose {
-        @apply grid gap-6;
+        @apply grid gap-7 md:gap-8;
     }
 
     .cx-public-stack {
-        @apply space-y-4;
+        @apply space-y-6 md:space-y-7;
     }
 
     .cx-public-stack-compact {
-        @apply space-y-3;
+        @apply space-y-5;
     }
 
     .cx-public-stack-loose {
-        @apply space-y-5;
+        @apply space-y-7 md:space-y-8;
     }
 
     .cx-public-stack-editorial {

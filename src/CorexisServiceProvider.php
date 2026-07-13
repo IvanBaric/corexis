@@ -12,13 +12,18 @@ use IvanBaric\Corexis\Contracts\LocaleResolver;
 use IvanBaric\Corexis\Contracts\SourceResolver;
 use IvanBaric\Corexis\Contracts\TenantResolver;
 use IvanBaric\Corexis\Resolvers\NullTenantResolver;
+use IvanBaric\Corexis\Support\ConfigResolver;
 use IvanBaric\Corexis\Support\Corexis;
+use IvanBaric\Corexis\Support\CorexisConfigResolver;
 use IvanBaric\Corexis\Support\CurrentActor;
 use IvanBaric\Corexis\Support\CurrentLocale;
 use IvanBaric\Corexis\Support\CurrentSource;
 use IvanBaric\Corexis\Support\CurrentTenant;
 use IvanBaric\Corexis\Support\IdempotencyStore;
 use IvanBaric\Corexis\Support\ImageUploadPolicy;
+use IvanBaric\Corexis\Support\PublicEmptyStatePreview;
+use IvanBaric\Corexis\Support\SlugNormalizer;
+use IvanBaric\Corexis\Support\UniqueSlugGenerator;
 
 class CorexisServiceProvider extends ServiceProvider
 {
@@ -26,24 +31,29 @@ class CorexisServiceProvider extends ServiceProvider
     {
         $this->mergeConfigFrom(__DIR__.'/../config/corexis.php', 'corexis');
 
+        $this->app->singleton(
+            ConfigResolver::class,
+            fn ($app): ConfigResolver => new ConfigResolver($app['config']),
+        );
+
         $this->app->bind(TenantResolver::class, function ($app): TenantResolver {
             if (! (bool) $app['config']->get('corexis.tenancy.enabled', false)) {
                 return $app->make(NullTenantResolver::class);
             }
 
-            return $app->make($app['config']->get('corexis.tenancy.resolver', NullTenantResolver::class));
+            return $app->make(CorexisConfigResolver::tenantResolver());
         });
 
         $this->app->bind(LocaleResolver::class, fn ($app): LocaleResolver => $app->make(
-            $app['config']->get('corexis.locale.resolver')
+            CorexisConfigResolver::localeResolver()
         ));
 
         $this->app->bind(ActorResolver::class, fn ($app): ActorResolver => $app->make(
-            $app['config']->get('corexis.actor.resolver')
+            CorexisConfigResolver::actorResolver()
         ));
 
         $this->app->bind(SourceResolver::class, fn ($app): SourceResolver => $app->make(
-            $app['config']->get('corexis.source.resolver')
+            CorexisConfigResolver::sourceResolver()
         ));
 
         $this->app->bind(CurrentTenant::class);
@@ -52,6 +62,9 @@ class CorexisServiceProvider extends ServiceProvider
         $this->app->bind(CurrentSource::class);
         $this->app->singleton(ImageUploadPolicy::class);
         $this->app->singleton(IdempotencyStore::class);
+        $this->app->singleton(PublicEmptyStatePreview::class);
+        $this->app->singleton(SlugNormalizer::class);
+        $this->app->singleton(UniqueSlugGenerator::class);
         $this->app->singleton(Corexis::class);
     }
 

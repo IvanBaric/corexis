@@ -41,7 +41,7 @@ final class ImageUploadPolicy
 
     public function maxFileSizeKb(): int
     {
-        return max(1, (int) config('corexis.image_uploads.default.max_file_size_kb', 3072));
+        return max(1, (int) config('corexis.image_uploads.default.max_file_size_kb', 6144));
     }
 
     public function maxFileSizeMb(): string
@@ -79,5 +79,56 @@ final class ImageUploadPolicy
     public function helpText(): string
     {
         return __('JPG, PNG ili WebP do :size MB.', ['size' => $this->maxFileSizeMb()]);
+    }
+
+    /** @return array<string, string> */
+    public function messages(string $field): array
+    {
+        return [
+            $field.'.uploaded' => $this->failedMessage(),
+            $field.'.image' => __('Odabrana datoteka mora biti slika.'),
+            $field.'.max' => __('Slika je prevelika. Najveća dopuštena veličina je :size MB.', [
+                'size' => $this->maxFileSizeMb(),
+            ]),
+            $field.'.mimes' => __('Format slike nije podržan. Dopušteni formati su: :formats.', [
+                'formats' => $this->mimeList(),
+            ]),
+            $field.'.dimensions' => __('Slika ne zadovoljava minimalne dimenzije.'),
+        ];
+    }
+
+    public function failedMessage(): string
+    {
+        return __('Slika se nije mogla prenijeti. Provjerite da je datoteka u podržanom formatu (:formats), manja od :size MB i pokušajte ponovno.', [
+            'size' => $this->maxFileSizeMb(),
+            'formats' => $this->mimeList(),
+        ]);
+    }
+
+    public function friendlyMessage(string $message): string
+    {
+        if (! $this->isGenericUploadFailure($message)) {
+            return $message;
+        }
+
+        return $this->failedMessage();
+    }
+
+    public function mimeList(): string
+    {
+        return strtoupper(implode(', ', $this->mimes()));
+    }
+
+    private function isGenericUploadFailure(string $message): bool
+    {
+        $message = strtolower($message);
+
+        return str_contains($message, 'failed to upload')
+            || str_contains($message, 'prijenos polja')
+            || str_contains($message, 'nije uspio')
+            || str_contains($message, 'uploads.')
+            || str_contains($message, 'files.')
+            || str_contains($message, 'featuredimageupload')
+            || str_contains($message, 'imageupload');
     }
 }

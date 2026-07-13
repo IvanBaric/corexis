@@ -1,6 +1,6 @@
 @layer base {
     :root {
-        --niva-primary: #047857;
+        --niva-primary: #C45A86;
         --niva-primary-50: color-mix(in srgb, var(--niva-primary) 10%, white);
         --niva-primary-100: color-mix(in srgb, var(--niva-primary) 18%, white);
         --niva-primary-200: color-mix(in srgb, var(--niva-primary) 30%, white);
@@ -52,6 +52,26 @@
 
     .cx-public-media-placeholder {
         @apply flex items-center justify-center bg-[color:var(--niva-primary-50)] text-[color:var(--niva-primary-700)] dark:bg-[color:var(--niva-primary-950)] dark:text-[color:var(--niva-primary-300)];
+    }
+
+    .cx-public-empty-state {
+        @apply rounded-xl border border-dashed border-[color:var(--niva-primary-200)] bg-[color:var(--niva-primary-50)]/55 p-7 text-zinc-700 ring-1 ring-white/60 dark:border-[color:var(--niva-primary-800)] dark:bg-[color:var(--niva-primary-950)]/30 dark:text-zinc-300 dark:ring-white/10;
+    }
+
+    .cx-public-empty-state-compact {
+        @apply px-5 py-4;
+    }
+
+    .cx-public-empty-state-icon {
+        @apply mb-4 flex size-12 items-center justify-center rounded-xl bg-white text-[color:var(--niva-primary-700)] shadow-sm shadow-zinc-950/5 ring-1 ring-[color:var(--niva-primary-100)] dark:bg-zinc-950 dark:text-[color:var(--niva-primary-300)] dark:ring-[color:var(--niva-primary-900)];
+    }
+
+    .cx-public-empty-state-title {
+        @apply text-sm font-semibold leading-5 text-zinc-950 dark:text-white;
+    }
+
+    .cx-public-empty-state-description {
+        @apply mt-2 text-sm leading-6 text-zinc-600 dark:text-zinc-300;
     }
 
     .cx-public-media-overlay {

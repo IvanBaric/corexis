@@ -14,7 +14,6 @@ return [
         'id_column' => env('COREXIS_TENANT_ID_COLUMN', 'team_id'),
         'uuid_column' => env('COREXIS_TENANT_UUID_COLUMN', 'tenant_uuid'),
         'type_column' => env('COREXIS_TENANT_TYPE_COLUMN', 'tenant_type'),
-        'fail_when_unresolved' => env('COREXIS_TENANCY_FAIL_WHEN_UNRESOLVED', false),
     ],
 
     'locale' => [
@@ -54,9 +53,23 @@ return [
         'fail_when_missing' => env('COREXIS_AUTHORIZATION_FAIL_WHEN_MISSING', false),
     ],
 
+    'pagination' => [
+        'default_items' => (int) env('COREXIS_PAGINATION_DEFAULT_ITEMS', 12),
+    ],
+
+    'slug' => [
+        'normalizer' => null,
+        'normalizer_method' => 'generate',
+        'fallback' => 'record',
+    ],
+
+    'public' => [
+        'test_empty_states' => env('COREXIS_PUBLIC_TEST_EMPTY_STATES', false),
+    ],
+
     'image_uploads' => [
         'default' => [
-            'max_file_size_kb' => (int) env('COREXIS_IMAGE_UPLOAD_MAX_FILE_SIZE_KB', 3072),
+            'max_file_size_kb' => 6144,
             'mimes' => ['jpg', 'jpeg', 'png', 'webp'],
             'min_width' => null,
             'min_height' => null,

@@ -99,7 +99,7 @@ final class IdempotencyStore
 
     private function table(): string
     {
-        return (string) config('corexis.idempotency.table', 'corexis_idempotency_keys');
+        return CorexisConfigResolver::idempotencyKeysTable();
     }
 
     private function ttlMinutes(): int

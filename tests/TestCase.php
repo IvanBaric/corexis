@@ -7,6 +7,7 @@ namespace IvanBaric\Corexis\Tests;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 use IvanBaric\Corexis\CorexisServiceProvider;
+use IvanBaric\Corexis\Tests\Fixtures\Models\CorexisContentModel;
 use IvanBaric\Corexis\Tests\Fixtures\Models\TenantModel;
 use IvanBaric\Corexis\Tests\Fixtures\Models\User;
 use Orchestra\Testbench\TestCase as Orchestra;
@@ -50,6 +51,7 @@ abstract class TestCase extends Orchestra
         parent::setUp();
 
         User::clearBootedModels();
+        CorexisContentModel::clearBootedModels();
         TenantModel::clearBootedModels();
 
         $this->createSchema();
@@ -58,6 +60,7 @@ abstract class TestCase extends Orchestra
     private function createSchema(): void
     {
         Schema::dropIfExists('tenant_models');
+        Schema::dropIfExists('corexis_content_models');
         Schema::dropIfExists('corexis_idempotency_keys');
         Schema::dropIfExists('users');
 
@@ -74,6 +77,17 @@ abstract class TestCase extends Orchestra
             $table->unsignedBigInteger('tenant_id')->nullable();
             $table->string('name');
             $table->timestamps();
+        });
+
+        Schema::create('corexis_content_models', function (Blueprint $table): void {
+            $table->id();
+            $table->uuid('uuid')->unique();
+            $table->unsignedBigInteger('team_id')->nullable();
+            $table->string('title');
+            $table->string('slug');
+            $table->timestamps();
+
+            $table->unique(['team_id', 'slug']);
         });
 
         Schema::create('corexis_idempotency_keys', function (Blueprint $table): void {
