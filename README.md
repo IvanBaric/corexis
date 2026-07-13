@@ -8,6 +8,12 @@ Corexis is not an application package. It does not contain SEO, audit, media, fo
 
 Corexis does not depend on Velora. Velora integration is generated only in the host application through an optional stub.
 
+## Documentation
+
+This README documents installation and package APIs. Normative engineering and product standards live in the [Corexis agent documentation index](AGENTS.md), which routes work to the relevant documents without requiring every standard to be loaded for every task.
+
+Use the [ecosystem architecture](docs/ecosystem-architecture.md) for package boundaries and write-flow rules. Project-specific workflows, including Niva deployment and package repository synchronization, live under [project profiles](docs/projects/niva.md).
+
 ## Installation
 
 ```bash
@@ -154,20 +160,6 @@ corexis_image_upload();
 corexis_public_empty_state_preview();
 ```
 
-## Livewire Security
-
-Every Livewire component change should include a security pass before completion. Treat public properties, form state, and action parameters as untrusted browser input. Use `#[Locked]` for server-owned route/model identity, mount-only configuration, pending modal identifiers, and read-only display state. Re-resolve models through tenant-scoped queries and authorize again before writes. See `docs/ecosystem-architecture.md` for the full Livewire security standard.
-
-Host apps should register custom no-argument route middleware with `Livewire::addPersistentMiddleware(...)` so authorization and tenant/team guards are re-applied on later Livewire update requests. Middleware with arguments, such as `permission:*` or `role:*`, still needs explicit authorization inside components, Actions, policies, or domain services before sensitive writes.
-
-Host apps should also put the Livewire update route behind a central named rate limiter, for example `throttle:livewire-updates`, and keep the per-minute limit configurable from host app config.
-
-For Livewire 4 CSP hardening, expose CSP-safe mode through `config('livewire.csp_safe')`, but keep it disabled until local or staging browser testing confirms Alpine and Livewire expressions work without `'unsafe-eval'`. Prefer simple inline expressions and move complex Alpine behavior into methods or `Alpine.data()` modules.
-
-## Auth And Invitations
-
-Login, two-factor, passkey, password reset, and public invitation flows should have explicit server-side rate limiting. Invitation links should use signed URLs, short expiry, hashed tokens, route-level IP throttling, and token-specific preview/submit throttling. Invitation acceptance should re-check status and role assignability inside a locked transaction before creating membership.
-
 ## Image Upload Policy
 
 Corexis defines one default image upload policy used across packages:
@@ -193,9 +185,7 @@ corexis_image_upload()->maxFileSizeKb();
 
 By default, image uploads are limited to 6 MB. Change `config/corexis.php` in the host project when the whole site should allow a different image size.
 
-For public uploaded media, use one disk variable across the host project: `MEDIA_DISK`. Media Library, gallery storage, and `corexis_public_media_disk()` should resolve to that same disk unless the project has a deliberate separate storage boundary.
-
-For admin Livewire image uploads, especially mobile photos and header/hero images, include client-side preparation before the Livewire upload starts: validate image type and size in the browser, resize large mobile photos to a reasonable maximum dimension, compress to a web-friendly format, then upload. This improves mobile reliability and does not replace server-side validation or the optimized Media Library master.
+Storage selection, Media Library optimization, conversion, client-side preparation, and lazy-loading requirements are defined in the [storage and media standard](docs/standards/storage-media.md) and the detailed [public media standard](docs/public-ui-media.md).
 
 ## Public Empty State Preview
 
@@ -228,7 +218,7 @@ Use the shared public empty-state component for public website sections that hav
 />
 ```
 
-Do not hand-build one-off public empty-state blocks in section templates. Keep visitor-facing text neutral and avoid admin instructions such as "Dodajte fotografije" on the public frontend.
+Empty-state behavior and visitor-facing copy are defined in the [public UI standard](docs/standards/public-ui.md).
 
 ## Public Image Placeholder Component
 
@@ -241,7 +231,7 @@ Use the shared public image placeholder when a public section has a media slot b
 />
 ```
 
-Keep the same aspect ratio, radius and size as the real image. Use content-aware icons such as `photo`, `cube`, `newspaper`, `film` or `heart`. Do not hand-build gray or empty image fallback blocks in public section templates.
+Placeholder aspect ratios, radius, icons, and fallback behavior are defined in the [public UI](docs/standards/public-ui.md) and [public media](docs/public-ui-media.md) standards.
 
 ## Model Concerns
 
@@ -381,19 +371,9 @@ Use stable keys such as provider event IDs, webhook IDs, payment IDs, or client-
 
 Domain events can implement `IvanBaric\Corexis\Contracts\Events\DomainEvent` as a shared marker for package listeners and subscribers.
 
-The ecosystem write flow is:
+See the [ActionResult and domain events standard](docs/action-result-events.md) and [ecosystem architecture](docs/ecosystem-architecture.md) for the write flow, package boundaries, Actions, Form Objects, and listener-based integrations.
 
-```text
-Livewire Component -> Livewire Form Object -> Action -> ActionResult -> Domain Event -> Listener
-```
-
-See `docs/action-result-events.md` for the event and `ActionResult` standard.
-
-See `docs/ecosystem-architecture.md` for the full IvanBaric package architecture standard, package boundaries, Action rules, Form Object rules, and listener-based integration pattern.
-
-See `docs/public-ui-typography.md` for the public Tailwind section typography standard used by reusable website layouts.
-
-See `docs/public-ui-motion.md` for the public motion standard, including the first-load public tenant loader pattern.
+Public UI implementation rules are indexed in [Corexis AGENTS.md](AGENTS.md).
 
 Host applications can include the shared public typography classes from Corexis:
 
@@ -420,3 +400,17 @@ Other packages can expose inheritance settings:
 ```
 
 In inherited mode, packages use Corexis global context. This keeps tenant, locale, actor, and source resolution consistent across audit, SEO, media, forms, notes, legal, notifications, and future packages.
+
+## Development
+
+Run the documentation integrity check and PHPUnit suite together:
+
+```bash
+composer test
+```
+
+Run only the documentation check:
+
+```bash
+composer docs:check
+```

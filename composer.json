@@ -25,7 +25,7 @@
   },
   "require-dev": {
     "mockery/mockery": "^1.6",
-    "orchestra/testbench": "^9.0 || ^10.0",
+    "orchestra/testbench": "^9.0 || ^10.0 || ^11.0",
     "phpunit/phpunit": "^10.5 || ^11.5"
   },
   "extra": {
@@ -36,7 +36,11 @@
     }
   },
   "scripts": {
-    "test": "phpunit"
+    "docs:check": "@php tools/validate-docs.php",
+    "test": [
+      "@docs:check",
+      "@php tools/run-phpunit.php"
+    ]
   },
   "minimum-stability": "stable",
   "prefer-stable": true
