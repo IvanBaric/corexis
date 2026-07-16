@@ -46,6 +46,7 @@ Ne koristiti `git archive` jer root `.gitattributes` ima `README.md export-ignor
 | `gallery` | `git@github.com:IvanBaric/gallery.git` | `main` |
 | `language` | `git@github.com:IvanBaric/language.git` | `main` |
 | `meta` | `git@github.com:IvanBaric/meta.git` | `main` |
+| `onboarding` | `git@github.com:IvanBaric/onboarding.git` | `main` |
 | `pages` | `git@github.com:IvanBaric/page.git` | `main` |
 | `plan` | `git@github.com:IvanBaric/plan.git` | `main` |
 | `sanigen` | `git@github.com:IvanBaric/sanigen.git` | `master` |
