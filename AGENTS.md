@@ -9,6 +9,7 @@ Ova datoteka je isključivo navigacijski indeks. Normativna pravila nalaze se u 
 ## Projektni profili
 
 - [Niva](docs/projects/niva.md)
+- [Doma Guide](docs/projects/domaguide.md)
 
 ## Standardi prema području rada
 
