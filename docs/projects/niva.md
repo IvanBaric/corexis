@@ -13,7 +13,7 @@ Ovaj dokument sadrži pravila specifična za Niva host aplikaciju, njezin monore
 - Administracijski shell i izravne `/app` te `/admin` rute dostupne su samo superadministratoru, uključujući superadministratorski kontekst tehničke podrške.
 - Početno podešavanje stranice dio je autentificiranog javnog iskustva na `/postavljanje`; ne smije koristiti administracijski shell ni `/app` URL.
 - `/postavljanje` koristi `ivanbaric/onboarding` kao kanonski workflow i `onboarding_runs` kao kanonsku pohranu. Niva smije zadržati samo konfiguraciju pitanja, initializer početne Pages strukture i support-mode access policy.
-- Javne page i single-content rute koriste Pages `PublicPageController` i `PublicContentController`. Niva zadržava samo availability middleware, tracker adapter, konkretni template i domenski `NivaPublicContentProvider` za radove, objave i galerije.
+- Javne page i single-content rute koriste Pages `PublicPageController` i `PublicContentController`. Konkretni header, footer, sekcijski renderer i admin katalog sekcija pripadaju `ivanbaric/niva-template`; Niva zadržava availability middleware, tracker adapter, prošireni layout i domenski `NivaPublicContentProvider` za radove, objave i galerije.
 - Javni management flyout koristi Pages registry. Gallery posjeduje image usage sažetak, Audit request-aware administrativno zapisivanje, a Velora support kontekst i superadmin middleware; Niva samo konfigurira te integracije.
 - Skrivanje stavke "Administracija" nije sigurnosna granica. HTTP middleware mora ne-superadministratora vratiti na javnu stranicu, a Livewire write akcije i dalje moraju provoditi permission, tenant i policy provjere.
 
@@ -47,6 +47,7 @@ Ne koristiti `git archive` jer root `.gitattributes` ima `README.md export-ignor
 | `language` | `git@github.com:IvanBaric/language.git` | `main` |
 | `meta` | `git@github.com:IvanBaric/meta.git` | `main` |
 | `onboarding` | `git@github.com:IvanBaric/onboarding.git` | `main` |
+| `niva-template` | `git@github.com:IvanBaric/niva-template.git` | `main` |
 | `pages` | `git@github.com:IvanBaric/page.git` | `main` |
 | `plan` | `git@github.com:IvanBaric/plan.git` | `main` |
 | `sanigen` | `git@github.com:IvanBaric/sanigen.git` | `master` |

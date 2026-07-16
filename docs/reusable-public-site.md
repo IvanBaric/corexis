@@ -7,6 +7,7 @@ Ovaj dokument definira zajedničku arhitekturu javnih web-stranica koje se uređ
 - `velora` posjeduje timove, javni profil organizacije, članstva, pozivnice i RBAC.
 - `pages` posjeduje stranice, podstranice, sekcije, stavke, javni page resolver, javni controller i public-first editore.
 - `template-engine` posjeduje registraciju templatea, schema polja, redoslijed i izvršavanje komponenti sekcija.
+- `niva-template` posjeduje konkretne Niva Classic/Modern komponente, osam zaglavlja, hijerarhijsku desktop i mobilnu navigaciju, footer, javne Blade prikaze i Pages admin katalog sekcija.
 - Konkretni vizualni template pripada zasebnom template paketu ili host aplikaciji. Ne stavljati domenske upite za proizvode, objave ili galerije u temeljni `template-engine`.
 - `blog`, `gallery` i drugi domenski paketi posjeduju svoje zapise i pojedinačne javne prikaze.
 - Host projekt konfigurira branding, konkretan template, dostupnost javnog vlasnika i opcionalni tracker posjeta.
@@ -100,15 +101,16 @@ Već izdvojeno:
 - request-aware administrativni audit u Audit
 - support context i superadmin middleware u Velora
 - template registracija, schema, payload i render loop u Template Engine
+- concrete Classic/Modern template, header/footer navigacija, sekcijski renderer, prijevodi i admin definicije u Niva Template
 
 Namjerno host-specifično:
 
 - aktivacijski i subscription middleware
 - tracker tablica i statistički dashboard
 - proizvodi i njihove single stranice
-- Niva onboarding i AI početni sadržaj
+- Niva recept pitanja i početne strukture; workflow, stanje i AI agent već pripadaju Onboarding paketu
 
-Sljedeći reusable modul treba biti zaseban concrete template paket. U njega pripadaju zajednički header, footer, hero i vizualni Blade layouti nakon što se domenski record dohvat zamijeni konfigurabilnim provider ugovorima. To ne pripada temeljnom `template-engine` paketu.
+Concrete template je izdvojen u `ivanbaric/niva-template`. Host konfigurira Organization/Product modele i admin URL resolver; projekt bez proizvoda može ostaviti product model praznim. Temeljni `template-engine` i dalje ne sadrži domenske upite ni konkretne vizualne predloške.
 
 ### Audit Preostalih Modula
 
@@ -119,8 +121,8 @@ Sljedeći reusable modul treba biti zaseban concrete template paket. U njega pri
 | Public page/content controlleri, provider registry i page view | Izdvojeno | Pages |
 | Page/section/item uređivanje na javnoj stranici | Već reusable | Pages |
 | Template registry, schema, payload i render loop | Već reusable | Template Engine |
-| Classic header, footer, hero i section Bladeovi | Reusable nakon uklanjanja Niva URL/model ovisnosti | Budući concrete template paket |
-| `GenericSection` record queryji | Razdvojiti po provider ugovorima za products/blog/gallery | Concrete template + domenski paketi |
+| Classic header, footer, hero i section Bladeovi | Izdvojeno, uključujući osam zaglavlja i mobilnu navigaciju | Niva Template |
+| `GenericSection` record queryji | Izdvojeno uz konfigurabilni Product/Organization model; daljnji katalog ugovor ostaje moguća nadogradnja | Niva Template + domenski paketi |
 | Product model, Actions, admin i public single provider | Niva zadržava domenski provider dok ne postoji zaseban katalog paket | Budući catalog/product paket |
 | Public page view analytics | Storage i dashboard nisu Pages odgovornost; Pages izlaže tracker ugovor | Budući analytics paket ili host adapter |
 | QR generator | Generičan, ali uvodi vanjsku biblioteku; izdvojiti kada ga koristi drugi proizvod | Corexis dodatak ili mali QR paket |
@@ -138,7 +140,7 @@ Kod se premješta tek kada ciljni paket može definirati stabilan ugovor bez ovi
 2. Pokrenuti migracije i permission sync.
 3. Konfigurirati `velora.models.team` i `velora.models.organization`.
 4. Konfigurirati `pages.public_site` subject, page/content rute, middleware, layout, tracker i content providere.
-5. Registrirati barem jedan concrete template i njegove sekcije.
-6. Definirati header/footer komponente i javne URL resolvere.
+5. Instalirati Niva Template ili registrirati drugi concrete template i njegove sekcije.
+6. Konfigurirati Niva Template modele/admin URL te koristiti `niva-template::public-layout` ili vlastiti layout s package Header/Footer komponentama.
 7. Dodati samo potrebne domenske record providere.
 8. Testirati anonimni render, tenant izolaciju, suspendirani tenant, public editing, mobilnu navigaciju i single content rute.

@@ -352,6 +352,7 @@ Package responsibilities:
 - `pages`: content pages, sections, items, configurable public page delivery/editing and provider dispatch for nested single-content routes.
 - `blog`: posts, news, event and content entries.
 - `template-engine`: template registration, schema, render foundation, template payload save action.
+- `niva-template`: concrete public-site templates, hierarchical header/mobile navigation, footer, section renderers and Pages admin section definitions.
 
 ## Special Package Notes
 
