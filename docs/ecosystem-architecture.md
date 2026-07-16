@@ -353,12 +353,15 @@ Package responsibilities:
 - `blog`: posts, news, event and content entries.
 - `template-engine`: template registration, schema, render foundation, template payload save action.
 - `niva-template`: concrete public-site templates, hierarchical header/mobile navigation, footer, section renderers and Pages admin section definitions.
+- `qr`: QR rendering, allowlisted downloads and reusable sharing UI; the host resolves the authorized target and publication/billing eligibility.
 
 ## Special Package Notes
 
 `admin-ui` must stay presentational. Its complete layout, responsive, form, modal, list, loading, pagination, and preview rules are defined in the [Corexis admin UI standard](standards/admin-ui.md).
 
 `starter` must stay an installer/orchestrator. It may clone packages, configure Composer repositories, require packages, publish resources, run migrations, and run sync commands. It must not become a service layer.
+
+`pages` may expose neutral extension contracts such as `PagePublicationGuard`, but must not import Billing, Plans or a host subscription model. Product access decisions remain in a host adapter.
 
 `sanigen` is a low-level utility. Do not add fake domain events or UI just for consistency.
 

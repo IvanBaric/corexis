@@ -102,6 +102,7 @@ Već izdvojeno:
 - support context i superadmin middleware u Velora
 - template registracija, schema, payload i render loop u Template Engine
 - concrete Classic/Modern template, header/footer navigacija, sekcijski renderer, prijevodi i admin definicije u Niva Template
+- QR generator, allowlisted download kontroler i reusable sharing panel u QR paketu
 
 Namjerno host-specifično:
 
@@ -125,7 +126,7 @@ Concrete template je izdvojen u `ivanbaric/niva-template`. Host konfigurira Orga
 | `GenericSection` record queryji | Izdvojeno uz konfigurabilni Product/Organization model; daljnji katalog ugovor ostaje moguća nadogradnja | Niva Template + domenski paketi |
 | Product model, Actions, admin i public single provider | Niva zadržava domenski provider dok ne postoji zaseban katalog paket | Budući catalog/product paket |
 | Public page view analytics | Storage i dashboard nisu Pages odgovornost; Pages izlaže tracker ugovor | Budući analytics paket ili host adapter |
-| QR generator | Generičan, ali uvodi vanjsku biblioteku; izdvojiti kada ga koristi drugi proizvod | Corexis dodatak ili mali QR paket |
+| QR generator, download i panel | Izdvojeno; host resolver određuje URL, naziv, tenant pristup i smije li se QR preuzeti | QR |
 | Theme color zabrana zelenih tonova | Niva brand pravilo, nije reusable platform pravilo | Host/concrete template |
 | Public management flyout | Shell, registry, authorization i panel dispatch izdvojeni; projekt konfigurira komponente/viewove | Pages + vlasnički panel provideri |
 | Initial setup wizard i AI sadržaj | Poslovni onboarding i recepti početnog sadržaja | Host + Starter recepti |
@@ -142,5 +143,7 @@ Kod se premješta tek kada ciljni paket može definirati stabilan ugovor bez ovi
 4. Konfigurirati `pages.public_site` subject, page/content rute, middleware, layout, tracker i content providere.
 5. Instalirati Niva Template ili registrirati drugi concrete template i njegove sekcije.
 6. Konfigurirati Niva Template modele/admin URL te koristiti `niva-template::public-layout` ili vlastiti layout s package Header/Footer komponentama.
-7. Dodati samo potrebne domenske record providere.
-8. Testirati anonimni render, tenant izolaciju, suspendirani tenant, public editing, mobilnu navigaciju i single content rute.
+7. Po potrebi konfigurirati public Language switcher i `PagePublicationGuard` host adapter.
+8. Konfigurirati QR target resolver ako proizvod preuzima QR kod javne stranice.
+9. Dodati samo potrebne domenske record providere.
+10. Testirati anonimni render, tenant izolaciju, suspendirani tenant, public editing, mobilnu navigaciju i single content rute.

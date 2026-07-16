@@ -50,6 +50,7 @@ Ne koristiti `git archive` jer root `.gitattributes` ima `README.md export-ignor
 | `niva-template` | `git@github.com:IvanBaric/niva-template.git` | `main` |
 | `pages` | `git@github.com:IvanBaric/page.git` | `main` |
 | `plan` | `git@github.com:IvanBaric/plan.git` | `main` |
+| `qr` | `git@github.com:IvanBaric/qr.git` | `main` |
 | `sanigen` | `git@github.com:IvanBaric/sanigen.git` | `master` |
 | `seo` | `git@github.com:IvanBaric/seo.git` | `main` |
 | `settings` | `git@github.com:IvanBaric/settings.git` | `main` |
