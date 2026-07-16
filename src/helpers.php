@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Schema;
@@ -14,8 +15,8 @@ use IvanBaric\Corexis\Support\CurrentSource;
 use IvanBaric\Corexis\Support\CurrentTenant;
 use IvanBaric\Corexis\Support\IdempotencyStore;
 use IvanBaric\Corexis\Support\ImageUploadPolicy;
-use IvanBaric\Corexis\Support\PublicImageOptimizer;
 use IvanBaric\Corexis\Support\PublicEmptyStatePreview;
+use IvanBaric\Corexis\Support\PublicImageOptimizer;
 
 if (! function_exists('corexis_tenant')) {
     function corexis_tenant(): CurrentTenant
@@ -237,11 +238,29 @@ if (! function_exists('corexis_authorization_ability_is_registered')) {
     function corexis_authorization_ability_is_registered(string $ability): bool
     {
         try {
-            if (! Schema::hasTable('permission_items')) {
-                return false;
+            $cacheKey = 'corexis.authorization.registered_abilities';
+            $request = ! app()->runningInConsole() && app()->bound('request')
+                ? app('request')
+                : null;
+
+            if ($request instanceof Request && $request->attributes->has($cacheKey)) {
+                /** @var array<string, true> $registeredAbilities */
+                $registeredAbilities = $request->attributes->get($cacheKey);
+
+                return isset($registeredAbilities[$ability]);
             }
 
-            return DB::table('permission_items')->where('code', $ability)->exists();
+            $registeredAbilities = Schema::hasTable('permission_items')
+                ? DB::table('permission_items')
+                    ->pluck('code')
+                    ->filter(fn (mixed $code): bool => is_string($code) && $code !== '')
+                    ->mapWithKeys(fn (string $code): array => [$code => true])
+                    ->all()
+                : [];
+
+            $request?->attributes->set($cacheKey, $registeredAbilities);
+
+            return isset($registeredAbilities[$ability]);
         } catch (Throwable) {
             return false;
         }

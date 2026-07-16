@@ -10,6 +10,9 @@ return [
     'authorization' => [
         'denied' => 'You are not authorized to perform this action.',
     ],
+    'validation' => [
+        'required' => 'Required field',
+    ],
 
     'concurrency' => [
         'stale_model' => 'This record was changed by someone else. Refresh the data before saving.',

@@ -3,11 +3,12 @@
 Ovaj dokument sadrži obavezna pravila za početno AI postavljanje i transakcijske e-mailove.
 
 ## AI početno postavljanje
-- Početno AI postavljanje treba biti fokusirani tok na kratkoj ruti, npr. `/app/ai`, ne duboko ugniježđena ruta poput `/app/website/ai-content`.
-- Dok početno postavljanje nije završeno, middleware mora štititi sve admin stranice osim eksplicitno dozvoljenih onboarding/processing/status ruta. Za development mora postojati konfiguracijski bypass kako se lokalno ne bi moralo trošiti AI pozive.
+- Ponovljivi onboarding lifecycle, spremanje odgovora i koraka, completion middleware, AI request i processing status pripadaju `ivanbaric/onboarding` packageu. Host aplikacija konfigurira pitanja, copy, deterministički initializer i domenski AI prompt; ne duplicira wizard, job ni status tablicu.
+- Početno AI postavljanje treba biti fokusirani tok na kratkoj ruti. Admin-centric aplikacija može koristiti `/app/ai`, a public-first aplikacija treba koristiti zasebnu autentificiranu rutu poput `/postavljanje`; ne koristiti duboko ugniježđene rute poput `/app/website/ai-content`.
+- Dok početno postavljanje nije završeno, middleware mora štititi upravljačke stranice i prijavljenog člana preusmjeriti s javnih ruta vlastitog tenanta na onboarding. Goste i posjete javnim rutama drugih tenanata ne smije preusmjeravati. Za development mora postojati konfiguracijski bypass kako se lokalno ne bi moralo trošiti AI pozive, ali taj bypass ne smije proširiti pristup administraciji.
 - Allowlist početnog postavljanja mora uključiti samo potrebne setup, processing, status, completion, logout i sigurne support rute.
 - Fokusirani onboarding ekran ne smije imati standardnu admin navigaciju ako ona ne pomaže korisniku završiti tok.
-- Fokusirani onboarding treba koristiti ponovljiv admin-ui layout za setup tok, a ne obični admin page shell.
+- Fokusirani onboarding treba koristiti ponovljiv setup layout, a ne obični admin page shell. Public-first aplikacija ne smije zbog ponovne uporabe kontrola smjestiti onboarding u administracijski namespace ili navigaciju.
 - Ne koristiti riječ "anketa" kao glavni CTA ili opis ako zvuči administrativno; preferirati "kratki odabir", "prilagodba" i "Kreni s prilagodbom".
 - Prvi korak mora u nekoliko rečenica objasniti trajanje i ishod. Trajanje prikazati kao badge s ikonom sata, npr. `1-2 minute`, a ne ponavljati ga u više odlomaka.
 - Copy ne smije ponavljati istu riječ u susjednim rečenicama, posebno "aplikacija". Tekst treba biti kratak, opušten i orijentiran na ishod: korisnik treba odmah vidjeti da će se kreirati stranice, sekcije i početni sadržaj koji kasnije može urediti.

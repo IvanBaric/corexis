@@ -11,6 +11,7 @@ use IvanBaric\Corexis\Contracts\ActorResolver;
 use IvanBaric\Corexis\Contracts\LocaleResolver;
 use IvanBaric\Corexis\Contracts\SourceResolver;
 use IvanBaric\Corexis\Contracts\TenantResolver;
+use IvanBaric\Corexis\Http\Middleware\SecureResponseHeaders;
 use IvanBaric\Corexis\Resolvers\NullTenantResolver;
 use IvanBaric\Corexis\Support\ConfigResolver;
 use IvanBaric\Corexis\Support\Corexis;
@@ -19,9 +20,12 @@ use IvanBaric\Corexis\Support\CurrentActor;
 use IvanBaric\Corexis\Support\CurrentLocale;
 use IvanBaric\Corexis\Support\CurrentSource;
 use IvanBaric\Corexis\Support\CurrentTenant;
+use IvanBaric\Corexis\Support\FrameworkDefaults;
 use IvanBaric\Corexis\Support\IdempotencyStore;
 use IvanBaric\Corexis\Support\ImageUploadPolicy;
 use IvanBaric\Corexis\Support\PublicEmptyStatePreview;
+use IvanBaric\Corexis\Support\PublicUrl;
+use IvanBaric\Corexis\Support\RichTextSanitizer;
 use IvanBaric\Corexis\Support\SlugNormalizer;
 use IvanBaric\Corexis\Support\UniqueSlugGenerator;
 
@@ -61,8 +65,11 @@ class CorexisServiceProvider extends ServiceProvider
         $this->app->bind(CurrentActor::class);
         $this->app->bind(CurrentSource::class);
         $this->app->singleton(ImageUploadPolicy::class);
+        $this->app->singleton(FrameworkDefaults::class);
         $this->app->singleton(IdempotencyStore::class);
         $this->app->singleton(PublicEmptyStatePreview::class);
+        $this->app->singleton(PublicUrl::class);
+        $this->app->singleton(RichTextSanitizer::class);
         $this->app->singleton(SlugNormalizer::class);
         $this->app->singleton(UniqueSlugGenerator::class);
         $this->app->singleton(Corexis::class);
@@ -70,6 +77,12 @@ class CorexisServiceProvider extends ServiceProvider
 
     public function boot(): void
     {
+        $this->app->make(FrameworkDefaults::class)->configure($this->app);
+
+        if ((bool) config('corexis.security_headers.enabled', true)) {
+            $this->app['router']->pushMiddlewareToGroup('web', SecureResponseHeaders::class);
+        }
+
         Blade::anonymousComponentPath(__DIR__.'/../resources/views/components');
         Blade::anonymousComponentPath(__DIR__.'/../resources/views/components', 'corexis');
         $this->loadTranslationsFrom(__DIR__.'/../lang', 'corexis');
@@ -122,6 +135,18 @@ class CorexisServiceProvider extends ServiceProvider
         $this->publishes([
             __DIR__.'/../resources/css/public-borders.css' => resource_path('css/vendor/corexis-public-borders.css'),
         ], 'corexis-public-borders');
+
+        $this->publishes([
+            __DIR__.'/../resources/css/interaction-cursors.css' => resource_path('css/vendor/corexis-interaction-cursors.css'),
+        ], 'corexis-interaction-cursors');
+
+        $this->publishes([
+            __DIR__.'/../resources/css/public-overlays.css' => resource_path('css/vendor/corexis-public-overlays.css'),
+        ], 'corexis-public-overlays');
+
+        $this->publishes([
+            __DIR__.'/../resources/css/public-polish.css' => resource_path('css/vendor/corexis-public-polish.css'),
+        ], 'corexis-public-polish');
 
         $this->commands([
             InstallCorexisCommand::class,

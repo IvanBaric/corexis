@@ -1,0 +1,58 @@
+@layer base {
+    body[data-corexis-public-shell] ::selection {
+        background-color: color-mix(in srgb, var(--niva-primary) 24%, transparent);
+        color: currentColor;
+    }
+
+    body[data-corexis-public-shell] :where(
+        a[href],
+        button,
+        input,
+        select,
+        textarea,
+        summary,
+        [role='button'],
+        [role='menuitem'],
+        [role='tab']
+    ):focus-visible {
+        outline: 2px solid color-mix(in srgb, var(--niva-primary) 82%, white);
+        outline-offset: 3px;
+    }
+}
+
+@layer components {
+    .cx-public-skip-link {
+        @apply fixed left-1/2 top-3 z-[1000] -translate-x-1/2 -translate-y-20 rounded-lg bg-zinc-950 px-4 py-2.5 text-sm font-semibold text-white shadow-lg shadow-zinc-950/20 transition duration-150 focus-visible:translate-y-0 dark:bg-white dark:text-zinc-950;
+    }
+
+    #main-content:focus {
+        outline: none;
+    }
+
+    body[data-corexis-public-shell] :where(.cx-public-media-frame, .cx-public-media-frame-surface) {
+        box-shadow:
+            inset 0 1px 0 rgb(255 255 255 / 0.42),
+            0 1px 2px rgb(24 24 27 / 0.05);
+    }
+
+    body[data-corexis-public-shell] :where(.cx-public-surface, .cx-public-surface-glass) {
+        background-image: linear-gradient(to bottom, rgb(255 255 255 / 0.18), transparent 3rem);
+    }
+}
+
+@media (prefers-contrast: more) {
+    body[data-corexis-public-shell] :where(
+        a[href],
+        button,
+        input,
+        select,
+        textarea,
+        summary,
+        [role='button'],
+        [role='menuitem'],
+        [role='tab']
+    ):focus-visible {
+        outline-color: currentColor;
+        outline-width: 3px;
+    }
+}

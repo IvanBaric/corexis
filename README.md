@@ -14,6 +14,13 @@ This README documents installation and package APIs. Normative engineering and p
 
 Use the [ecosystem architecture](docs/ecosystem-architecture.md) for package boundaries and write-flow rules. Project-specific workflows, including Niva deployment and package repository synchronization, live under [project profiles](docs/projects/niva.md).
 
+Reusable product foundations extracted from host applications are documented separately:
+
+- [Reusable public site](docs/reusable-public-site.md): public subject resolution, Pages controllers, content providers, management UI and Template Engine boundaries.
+- [Reusable onboarding](docs/reusable-onboarding.md): persistent guided setup, host adapters, AI processing, completion guards and migration from legacy settings.
+
+These documents define ownership across Pages, Template Engine, Onboarding, Velora, Gallery and Audit so new products can assemble the same foundation without copying controllers or workflows from an existing application.
+
 ## Installation
 
 ```bash
@@ -55,6 +62,20 @@ When enabled, configure the resolver:
     'id_column' => 'team_id',
 ],
 ```
+
+## Framework Defaults
+
+Registering Corexis also applies shared Laravel defaults that should be consistent across host applications:
+
+- immutable dates through `CarbonImmutable`;
+- Eloquent strict mode outside production;
+- destructive database command protection in production;
+- a 500 ms cumulative database query-time warning without SQL or bindings in logs;
+- production password rules with a minimum of eight characters, mixed case, letters, numbers, symbols, and the uncompromised check;
+- translated short messages for required validation rules;
+- prevention of unfaked Laravel HTTP client requests during tests.
+
+These defaults can be changed centrally under `corexis.framework` in `config/corexis.php`. A `null` value for `strict_models` or `prohibit_destructive_commands` keeps the environment-aware defaults. Set `cumulative_query_time_threshold_ms` to `0` to disable query-time warnings.
 
 ## ConfigResolver Standard
 

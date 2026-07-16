@@ -3,12 +3,13 @@
 Ovaj dokument sadrži obavezne standarde za administracijsko sučelje, forme, validaciju, paginaciju i prikaze.
 
 ## Admin UI i ponovljivi obrasci
+- Svaka Livewire komponenta koja prikazuje kolekciju, tablicu, grid ili rezultate pretrage mora imati eksplicitno prazno stanje. U admin i javnim upravljačkim flyoutima koristiti `x-admin-ui::empty-state`; obična rečenica unutar praznog retka ili praznog panela nije dovoljan standard. Empty state treba razlikovati početno prazno stanje od praznog rezultata aktivne pretrage ili filtera kada je to korisniku važno.
 - Svaka admin lista/tablica koja prikazuje redove mora imati vidljiv `admin-list-header` neposredno iznad redova, s istim grid kolonama kao redovi. Prazna stanja ne trebaju header, ali stranice, sekcije, objave, radovi, kategorije, oznake, korisnici i buduće liste ne smiju ostati bez naziva kolona.
-- Ponovljivi admin layout, responsive pravila, Flux modal širine, mobilni gutteri, editor overflow fix, cursor ponašanje i stilovi za required oznake pripadaju u `packages/ivanbaric/admin-ui`, ne u pojedinačni projekt.
-- Host aplikacija treba samo importati `admin-ui.css`; ne duplicirati iste modal/mobile fixeve u `resources/css/app.css` osim ako postoji stvarno projektno odstupanje.
+- Ponovljivi admin layout, responsive pravila, Flux modal širine, mobilni gutteri, editor overflow fix i stilovi za required oznake pripadaju u `packages/ivanbaric/admin-ui`, ne u pojedinačni projekt. Opće cursor ponašanje za semantičke akcije, Flux tabove i izbornike pripada Corexis `interaction-cursors.css`; admin-ui smije dodati samo admin-specifične iznimke.
+- Host aplikacija treba importati `admin-ui.css` za admin-specifična pravila i Corexis `interaction-cursors.css` za zajedničko cursor ponašanje; ne duplicirati iste modal/mobile/cursor fixeve u `resources/css/app.css` osim ako postoji stvarno projektno odstupanje.
 - Obavezna admin polja ne označavati HTML atributom `required` ako želimo Livewire/backend validaciju prije browser validacije. Na Flux kontrolu staviti `data-required`; `admin-ui.css` automatski dodaje crvenu zvjezdicu na Flux label. `x-admin-ui::required-label` koristiti samo za custom markup koji ne koristi Flux label.
 - Svi Flux select/dropdown elementi u administraciji trebaju koristiti `variant="listbox"` osim ako postoji dokumentiran razlog za drukčiji prikaz.
-- Primarni Livewire submit gumbi moraju koristiti `x-admin-ui::submit-button`: scoped `wire:target`, disabled tijekom requesta, Flux loader i loading label `Spremanje...`. Kod većih admin formi primarni save gumb mora biti unutar iste `<form wire:submit="...">` kao polja koja sprema, čak i kada je vizualno u page headeru. Veće admin forme trebaju imati `wire:loading.class="admin-panel-content-loading"` i `x-admin-ui::loading-overlay` s tekstom `Spremanje...`. Ne ostavljati ručne `<flux:button type="submit" variant="primary">` gumbe koji se mogu kliknuti više puta tijekom spremanja.
+- Primarni Livewire submit gumbi moraju koristiti `x-admin-ui::submit-button`: scoped `wire:target`, disabled tijekom requesta, shared spinner i loading label `Spremanje...`. Ikona gumba prikazuje se samo u normalnom stanju; loading stanje ne smije zadržati Flux `icon` prop uz tekst `Spremanje...`. Kod većih admin formi primarni save gumb mora biti unutar iste `<form wire:submit="...">` kao polja koja sprema, čak i kada je vizualno u page headeru. Veće admin forme trebaju imati `wire:loading.class="admin-panel-content-loading"` i `x-admin-ui::loading-overlay` s tekstom `Spremanje...`. Ne ostavljati ručne `<flux:button type="submit" variant="primary">` gumbe koji se mogu kliknuti više puta tijekom spremanja.
 - Flux modali koji ovise o server-side entitetu, form stateu ili pending UUID-u ne smiju se otvarati kroz `<flux:modal.trigger>` uz istodobni `wire:click`. Livewire metoda mora prvo resetirati stari state, tenant-scoped dohvatiti/validirati entitet, napuniti formu ili pending UUID, pa tek onda otvoriti modal s `Flux::modal(...)->show()` ili `modal-show`.
 - Svaki takav modal mora resetirati state na zatvaranje (`x-on:close="$wire.cancel...()"`, `@cancel` ili ekvivalent). X, ESC, klik izvan modala i Odustani ne smiju ostaviti stare podatke koji se vide pri sljedećem otvaranju.
 - Admin stranice moraju imati konzistentan mobilni gutter kao stranica "Stranice"; forme, editori, tabovi i kartice ne smiju dodirivati rub ekrana niti izlaziti iz viewporta.
@@ -16,7 +17,7 @@ Ovaj dokument sadrži obavezne standarde za administracijsko sučelje, forme, va
 - Za Flux admin layout standard je: shell zaključan na `100dvh`, grid main row kao `minmax(0, 1fr)`, scroll samo na `[data-flux-main]`, a `scrollbar-gutter: stable` samo na `[data-flux-main]`. Tako se ne miče sadržaj kod Flux dropdowna i ne pomiču se glavni naslovi 2-3px između kratkih i dugih stranica.
 - Standardni gutter admin stranice smije imati samo `.admin-page`; `[data-flux-main]` je isključivo scroll owner. Flux main zadano dodaje `p-6 lg:p-8`, pa `admin-ui` taj padding mora ukloniti kada je `.admin-page` njegov izravni child. Ne ostavljati oba paddinga jer dvostruki vertikalni razmak stvara umjetni overflow i scrollbar na kratkim stranicama.
 - Izbjegavati "karticu u kartici": admin paneli na mobitelu ne crtaju vanjski obrub/sjenu niti dodatan horizontalni padding, a upload polja, pomoćni blokovi i form sekcije ne smiju stvarati više ugniježđenih obruba. Media upload shell nema vlastiti obrub ni na desktopu ni na mobitelu; vidljiv ostaje samo unutarnji klikabilni image frame. Za media upload koristiti shared `admin-media-upload-*` klase iz `admin-ui`.
-- Admin preview za istaknute/featured slike mora biti ujednačen kroz aplikaciju: široke slike zadano koriste `aspect-video` i `object-contain`, a admin liste za objave/radove ne smiju koristiti cropani `thumb` za glavni preview jer korisniku može izgledati kao pogrešno uvećana slika. Ako se želi crop u javnom layoutu, to je zasebna dizajnerska odluka javnog prikaza, ne admin previewa.
+- Admin preview za istaknute/featured slike mora biti ujednačen kroz aplikaciju: velike preview slike zadano koriste `aspect-video` i `object-contain`, a kompaktne admin liste za objave/radove smiju koristiti `object-cover` kako bi fotografija ispunila thumbnail okvir. Admin liste ne smiju koristiti cropani `thumb` kao glavni source; koristiti non-cropped konverziju poput `medium`, pa tek CSS-om kontrolirati fit unutar okvira.
 - Na mobitelu form itemi moraju imati veći vertikalni razmak nego na desktopu. Ne rješavati to lokalnim `mt-*` klasama po svakoj formi; shared mobile spacing ide u `admin-ui.css`.
 - Svi interaktivni elementi koji izgledaju kao akcija, uključujući sekundarne gumbe i povezivanje galerije, moraju imati jasan `cursor-pointer`/hover signal.
 - `admin-ui` mora ostati prezentacijski paket: bez queryja, validacije, permission logike, Actiona, Eventa, Listenera ili model saveova.
@@ -28,7 +29,7 @@ Ovaj dokument sadrži obavezne standarde za administracijsko sučelje, forme, va
 
 ## Validacija u adminu
 - Sva obavezna polja moraju vraćati kratku poruku `Obavezno polje`.
-- Centralni izvor za `required`, `required_if`, `required_with`, `required_without`, `required_array_keys`, `accepted` i srodna pravila je `App\Providers\AppServiceProvider::configureRequiredValidationMessages()` uz `lang/hr/validation.php`.
+- Centralni izvor za `required`, `required_if`, `required_with`, `required_without`, `required_array_keys`, `accepted` i srodna pravila je Corexis framework-default konfiguracija i njezin prevedeni `corexis::corexis.validation.required` tekst.
 - Ne dodavati nove ručne poruke tipa `Unesite...`, `Odaberite...` ili `Polje je obavezno` za `*.required` pravila; ako komponenta mora imati custom `messages()`, required poruka mora ostati `__('Obavezno polje')`.
 
 ## Admin paginacija
@@ -38,12 +39,12 @@ Ovaj dokument sadrži obavezne standarde za administracijsko sučelje, forme, va
 
 ## Admin submit gumbi
 - Primarni Livewire submit gumbi u administraciji trebaju koristiti `<x-admin-ui::submit-button target="save">...</x-admin-ui::submit-button>`.
-- Gumb mora imati scoped `wire:target`, Flux loader, disabled state tijekom requesta i loading label `Spremanje...`.
+- Gumb mora imati scoped `wire:target`, shared spinner, disabled state tijekom requesta i loading label `Spremanje...`.
 - Primarni save gumb na većim formama držati unutar iste `<form wire:submit="...">`; vanjski submit, `form="..."` i ručni `wire:click="save"` koristiti samo kao iznimku s fokusiranim testom.
 - Ako je vanjski submit nužan, shared Blade wrapper mora proslijediti izvorni `$attributes` bag izravno u nested Flux komponentu. Ne preimenovati attribute bag i ne stavljati `@if` direktive među atribute nested komponente; obavezno testirati da renderirani gumb stvarno sadrži očekivane `form` i `wire:target` atribute.
 - Veće admin forme trebaju imati `wire:loading.class="admin-panel-content-loading"` i `x-admin-ui::loading-overlay` s tekstom `Spremanje...`.
 - Ne pisati običan `<flux:button type="submit" variant="primary">` za spremanje Livewire formi bez loading/disabled ponašanja.
-- Veće edit forme trebaju koristiti obrazac "isto kao u objavama": `savedStateSnapshot`, `isDirty()`, info toast `Nema promjena za spremanje.`, prikaz zadnje izmjene s korisnikom i `wire:poll.180000ms="autoSave"` koji sprema samo kada postoje promjene.
+- Veće edit forme trebaju koristiti obrazac "isto kao u objavama": zaključani `savedStateHash`, `isDirty()`, info toast `Nema promjena za spremanje.`, prikaz zadnje izmjene s korisnikom i `wire:poll.180000ms="autoSave"` koji sprema samo kada postoje promjene. Hash mora nastati iz normaliziranog stanja; ne spremati kopiju cijelog rich-text sadržaja u dodatno Livewire public svojstvo.
 - Veće create/edit forme trebaju koristiti `x-admin-ui::editor-header`: kontekst s ikonom, jasan naslov zadatka, kratak opis, zaseban metadata slot i akcije poredane od navigacije prema primarnom spremanju. Editor header ostaje bez kartice i ne izrađuje se ručno po entitetu.
 
 ## Admin nadzorna ploča
@@ -56,6 +57,12 @@ Ovaj dokument sadrži obavezne standarde za administracijsko sučelje, forme, va
 - Create/edit forme trebaju koristiti `x-admin-ui::editor-header`; ikona mora odgovarati sidebar stavci ili najbližem navigacijskom kontekstu.
 - Admin save/create/update forme moraju koristiti `x-admin-ui::submit-button` s točnim Livewire `targetom`, `wire:loading.class="admin-panel-content-loading"` na formi/wrapperu i `x-admin-ui::loading-overlay` s tekstom `Spremanje...`. Ručni primarni `flux:button` za spremanje ne koristiti osim ako nije specifičan non-form flow.
 - Ako parent header gumb sprema child Livewire editor preko `$dispatch(...)`, parent gumb mora imati isti saving UX (`Spremanje...`, spinner, disabled), a child komponenta mora u `finally` poslati završni event i u svoje `wire:target`/overlay targete uključiti metodu koja se stvarno poziva, npr. `saveAllChanges`.
+
+## Livewire akcije koje otvaraju prikaz
+- Eksplicitne akcije koje prije otvaranja flyouta, modala ili novog upravljačkog prikaza dohvaćaju podatke trebaju koristiti odgođeni `<x-admin-ui::action-loading>` overlay.
+- Overlay obavezno ograničiti točnim `wire:target` popisom kako `wire:model`, pretraživanje i drugi pozadinski requestovi ne bi blokirali cijelo sučelje.
+- Kada se akcija pokreće Livewire događajem iz druge komponente (`$dispatch(...)`), primateljev loading target je interni `__dispatch`; izravni `wire:click="method"` i `wire:submit="method"` pozivi koriste naziv metode.
+- Za spremanje unutar već otvorenog obrasca i dalje koristiti lokalni `x-admin-ui::loading-overlay`, prigušenje sadržaja i loading stanje gumba.
 
 ## Admin preview kartice
 - Admin preview sličice layouta moraju vizualno pratiti javni prikaz tog layouta, ali ostati uredne, pastelne i mirne kao na postojećem primjeru iz admina.

@@ -2,10 +2,26 @@
 
 Ovaj dokument sadrži obavezna opća pravila za javni render, vizualnu dosljednost i animacije.
 
+## Ugodna i pristupačna navigacija
+- Zajednički javni layout mora kao prvi fokusabilni element imati poveznicu `Preskoči na sadržaj` koja se prikazuje tek pri fokusu tipkovnicom.
+- Cilj poveznice mora biti stabilni `#main-content`, a javna stranica mora imati jedan semantički `main` landmark. Editorske kontrole i modalni hostovi ne smiju biti dio tog landmarka.
+- Globalni gumb za povratak na vrh mora imati pristupačan naziv i tooltip te poštovati `prefers-reduced-motion` bez glatkog skrolanja kada korisnik traži smanjene animacije.
+
 ## Rich text i odlomci
 - Kada javni single prikaz renderira opis iz editora ili višeredni tekst, ne koristiti squish() prije dijeljenja na odlomke jer briše nove redove.
 - Za duži tekst koristiti obrazac kao kod single objave: trim(), preg_split po praznom retku, zatim nl2br(e(trim(paragraph))) unutar p elementa.
 - U karticama/listama smije se koristiti stripTags()->squish()->limit(...) jer tamo treba kratak sažetak u jednom retku ili kraćem bloku.
+
+## Flux flyout, dropdown i stabilnost javnog layouta
+- Host aplikacija mora nakon Flux CSS-a importati Corexis `interaction-cursors.css`. Zajednički stylesheet daje `cursor: pointer` semantičkim akcijama, Flux tabovima i izbornicima te Livewire/Alpine klik akcijama, a disabled kontrolama `cursor: not-allowed`; lokalni `cursor-wait` utility smije nadjačati to pravilo tijekom requesta.
+- Host aplikacija mora importati `packages/ivanbaric/corexis/resources/css/public-overlays.css` nakon Flux CSS-a i označiti javni `<body>` atributom `data-corexis-public-shell`. Ne kopirati ovaj workaround u projektni `app.css`.
+- Corexis na desktopu koristi `scrollbar-gutter: stable` samo za označeni javni shell kako otvaranje Flux dropdowna ili modala ne bi horizontalno pomicalo sadržaj.
+- Budući da javni desktop layout koristi root scrollbar, otvoreni Flux `ui-dropdown[data-open]` ne smije ostaviti Fluxov inline `overflow: hidden` na `<html>` i sakriti scrollbar. Shared `public-overlays.css` zadržava `overflow-y: scroll !important` samo dok je dropdown otvoren i nijedan Flux modal nije otvoren.
+- Dropdown iznimku ne primjenjivati na otvorene modale ili flyoute: modal mora i dalje zaključati pozadinski scroll, a njegov sadržaj imati vlastiti scroll owner.
+- Dok je Flux flyout otvoren, root gutter mora prijeći na `auto`. Flux ima poznat problem s root `scrollbar-gutter: stable` i flyout modalima; bez ovog izuzetka flyout može biti pogrešno pomaknut ili nestati. Referenca: [Flux issue #2348](https://github.com/livewire/flux/issues/2348).
+- Javni editorski flyout koji sadrži Flux dropdown, select, popover ili submenu mora koristiti `:dismissible="false"` i imati vidljiv eksplicitni gumb za zatvaranje. Native popover klik ne smije biti protumačen kao klik izvan flyouta i zatvoriti cijeli editor.
+- Stateful javni flyout montira se jednom pri kraju stabilnog javnog layouta, izvan sadržaja stranice koji se Livewireom ponovno renderira. Ne uvjetno uklanjati root modala dok se mijenja njegov child editor.
+- Admin shell ne koristi ovaj javni root workaround. Admin standard ostaje zaseban: `admin-ui.css` zaključava shell na `100dvh`, a `scrollbar-gutter: stable` postavlja samo na `[data-flux-main]` kao stvarni scroll owner.
 
 ## Vizualna dosljednost javnih sekcija
 - Naslov sekcije i opis sekcije moraju uvijek biti odvojeni od sadržaja sekcije i ne smiju biti dio kartica, redova ili pojedinačnih zapisa.

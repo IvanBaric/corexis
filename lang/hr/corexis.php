@@ -10,6 +10,9 @@ return [
     'authorization' => [
         'denied' => 'Nemate ovlasti za ovu radnju.',
     ],
+    'validation' => [
+        'required' => 'Obavezno polje',
+    ],
     'concurrency' => [
         'stale_model' => 'Ovaj zapis je u međuvremenu promijenjen. Osvježite podatke prije spremanja.',
     ],

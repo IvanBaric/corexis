@@ -335,7 +335,7 @@ Package responsibilities:
 - `corexis`: shared contracts, context resolvers, ActionResult, DomainEvent marker, architecture docs.
 - `admin-ui`: presentational Blade/UI primitives only.
 - `starter`: installer/orchestrator only.
-- `velora`: teams, memberships, RBAC, invitations.
+- `velora`: teams, reusable public organization profiles, memberships, RBAC, invitations.
 - `plan`: plans, entitlements, usage.
 - `billing`: subscriptions, payment attempts, access lifecycle.
 - `audit`: event/audit listener package.
@@ -347,8 +347,9 @@ Package responsibilities:
 - `meta`: small polymorphic metadata.
 - `settings`: configurable settings pages.
 - `language`: locale and language management.
+- `onboarding`: persistent guided setup, questionnaire UI, completion middleware, structured AI request lifecycle and initial Pages content application.
 - `sanigen`: sanitization/generation utility.
-- `pages`: content pages.
+- `pages`: content pages, sections, items, configurable public page delivery/editing and provider dispatch for nested single-content routes.
 - `blog`: posts, news, event and content entries.
 - `template-engine`: template registration, schema, render foundation, template payload save action.
 
@@ -419,7 +420,7 @@ For backwards compatibility, Corexis treats a dotted permission ability as missi
 
 ## Product Setup Boundary
 
-Initial AI/content setup is a host-product workflow. Its route protection, deterministic structure generation, development bypass, copy, steps, and Livewire readiness behavior are defined only in the [Corexis product experience standard](standards/product-experience.md).
+`ivanbaric/onboarding` owns the reusable workflow record, wizard mechanics, route protection, processing state, development bypass and structured AI request lifecycle. The host product owns its questionnaire options, deterministic structure initializer, domain-specific AI instructions and exceptional access policy. Product experience requirements remain defined only in the [Corexis product experience standard](standards/product-experience.md).
 
 ## Concurrency Standard
 

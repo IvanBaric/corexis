@@ -98,7 +98,7 @@ Za javne slike koje dolaze iz media library/gallery sustava koristiti imenovane 
 | Uloga | Preferirana konverzija | Napomena |
 | --- | --- | --- |
 | Mala sličica, mali avatar | `thumb` | Za slučajeve gdje je crop namjeran i očekivan. |
-| Admin preview istaknute slike | `medium` | Koristiti s `aspect-video` i `object-contain` da se korisniku prikaže cijela uploadana slika. |
+| Admin preview istaknute slike | `medium` | Veliki preview koristi `object-contain`; kompaktne admin liste za objave/radove smiju koristiti `object-cover` kako bi slika ispunila thumbnail okvir. |
 | Logo ili manji identitetski vizual | `medium` | Kada je potreban ograničen okvir bez velikog cropa. |
 | Standardna slika kartice ili sekcije | `large` | Zadani izbor za javni prikaz u layoutima. |
 | Velika hero slika, featured slika, lightbox početna slika | `xlarge` | Koristiti samo kada layout stvarno treba veću sliku. |

@@ -8,6 +8,37 @@ use IvanBaric\Corexis\Resolvers\NullTenantResolver;
 use IvanBaric\Corexis\Resolvers\RequestSourceResolver;
 
 return [
+    'framework' => [
+        'immutable_dates' => true,
+
+        /*
+         * Null enables strict models outside production and prohibits destructive
+         * database commands in production. Set an explicit boolean to override.
+         */
+        'strict_models' => env('COREXIS_STRICT_MODELS'),
+        'prohibit_destructive_commands' => env('COREXIS_PROHIBIT_DESTRUCTIVE_COMMANDS'),
+
+        /* Set to 0 to disable cumulative query-time warnings. */
+        'cumulative_query_time_threshold_ms' => (float) env(
+            'COREXIS_QUERY_TIME_THRESHOLD_MS',
+            500,
+        ),
+
+        'prevent_stray_http_requests_in_tests' => true,
+        'required_validation_message' => 'corexis::corexis.validation.required',
+
+        'passwords' => [
+            'enabled' => true,
+            'production_only' => true,
+            'minimum' => 8,
+            'mixed_case' => true,
+            'letters' => true,
+            'numbers' => true,
+            'symbols' => true,
+            'uncompromised' => true,
+        ],
+    ],
+
     'tenancy' => [
         'enabled' => env('COREXIS_TENANCY_ENABLED', false),
         'resolver' => NullTenantResolver::class,
@@ -51,6 +82,16 @@ return [
          * start failing writes. Set true in security-hardened apps.
          */
         'fail_when_missing' => env('COREXIS_AUTHORIZATION_FAIL_WHEN_MISSING', false),
+    ],
+
+    'security_headers' => [
+        'enabled' => env('COREXIS_SECURITY_HEADERS_ENABLED', true),
+        'headers' => [
+            'X-Content-Type-Options' => 'nosniff',
+            'X-Frame-Options' => 'SAMEORIGIN',
+            'Referrer-Policy' => 'strict-origin-when-cross-origin',
+            'Permissions-Policy' => 'camera=(), microphone=(), geolocation=()',
+        ],
     ],
 
     'pagination' => [

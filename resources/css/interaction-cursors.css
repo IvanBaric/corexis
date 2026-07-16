@@ -1,0 +1,71 @@
+@layer base {
+    :where(
+        a[href],
+        button,
+        summary,
+        label[for],
+        select,
+        input[type='button'],
+        input[type='checkbox'],
+        input[type='color'],
+        input[type='file'],
+        input[type='image'],
+        input[type='radio'],
+        input[type='range'],
+        input[type='reset'],
+        input[type='submit'],
+        [role='button'],
+        [role='menuitem'],
+        [role='tab'],
+        [data-flux-button],
+        [data-flux-checkbox],
+        [data-flux-checkbox-buttons],
+        [data-flux-checkbox-cards],
+        [data-flux-checkbox-pills],
+        [data-flux-menu-checkbox],
+        [data-flux-menu-item],
+        [data-flux-menu-radio],
+        [data-flux-navmenu-item],
+        [data-flux-profile],
+        [data-flux-radio],
+        [data-flux-radio-buttons],
+        [data-flux-radio-cards],
+        [data-flux-radio-pills],
+        [data-flux-radio-segmented],
+        [data-flux-sidebar-item],
+        [data-flux-switch],
+        [data-flux-tab],
+        [data-flux-table-sortable],
+        [\@click],
+        [wire\:click],
+        [x-on\:click]
+    ):not(:disabled):not([disabled]):not([aria-disabled='true']) {
+        cursor: pointer;
+    }
+
+    :where(
+        button,
+        select,
+        input,
+        [role='button'],
+        [role='menuitem'],
+        [role='tab'],
+        [data-flux-button],
+        [data-flux-checkbox],
+        [data-flux-checkbox-buttons],
+        [data-flux-checkbox-cards],
+        [data-flux-checkbox-pills],
+        [data-flux-menu-checkbox],
+        [data-flux-menu-item],
+        [data-flux-menu-radio],
+        [data-flux-radio],
+        [data-flux-radio-buttons],
+        [data-flux-radio-cards],
+        [data-flux-radio-pills],
+        [data-flux-radio-segmented],
+        [data-flux-switch],
+        [data-flux-tab]
+    ):is(:disabled, [disabled], [aria-disabled='true']) {
+        cursor: not-allowed;
+    }
+}

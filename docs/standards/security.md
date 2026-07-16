@@ -23,6 +23,7 @@ Ovaj dokument sadrži obavezna pravila za tajne, autentikaciju, pozivnice te Liv
 - Action metode koje primaju UUID, type, sort field, filter, tab, status ili action name moraju ponovno validirati allowlist i/ili dohvatiti model kroz tenant-scoped query prije bilo kakvog pisanja.
 - Destruktivne ili osjetljive modalne akcije trebaju koristiti obrazac `confirm...($uuid)` koji server-side postavi `#[Locked]` pending UUID, a stvarna akcija (`delete`, `archive`, `restore`, `publish`, `detach`) ne smije nepotrebno primati direktni UUID iz browsera.
 - Svaki write mora proći kroz Action ili ekvivalentnu backend metodu koja ponovno autorizira radnju. Sakrivanje gumba u Bladeu je samo UX, nije sigurnost.
+- Privilegirana javna Livewire akcija mora odbiti zahtjev ako actor ili tenant nije razriješen. `null` tenant nikada ne smije značiti "bez tenant ograničenja" za browser-triggered write, čak ni kada je gumb skriven ili zakomentiran.
 - Ako Livewire komponenta živi iza custom route middlewarea bez argumenata, taj middleware mora biti registriran kroz `Livewire::addPersistentMiddleware(...)` u service provideru kako bi se ponovno primijenio na naknadne Livewire requestove.
 - Custom middleware s argumentima, npr. `permission:*` ili `role:*`, ne tretirati kao dovoljan za naknadne Livewire requestove jer Livewire persistent middleware ne podržava argumente; osjetljive write akcije moraju ponoviti permission/role/policy provjeru u komponenti, Actionu ili policyju.
 - Livewire update route mora imati centralni rate limiter u `config/livewire.php` (`update_middleware`, `rate_limits.update_requests_per_minute`). Ne dodavati odvojene hardkodirane throttle vrijednosti po komponentama bez stvarnog razloga.
@@ -45,3 +46,8 @@ Ovaj dokument sadrži obavezna pravila za tajne, autentikaciju, pozivnice te Liv
 - Ako se uključuje strogi CSP bez `'unsafe-eval'`, prvo uključiti `config('livewire.csp_safe')` na lokalnom/staging branchu, otvoriti ključne admin i javne tokove u browseru i provjeriti konzolu za CSP/Alpine/Livewire greške.
 - Ako stranica koristi ručne `<script>` blokove, CSP produkcijski rollout mora predvidjeti nonce ili preseljenje skripte u bundlani asset. Ne dodavati nove inline `<script>` blokove bez jasnog razloga.
 - CSP browser pass mora obuhvatiti file upload, modale, dropdowne, paginaciju, lazy sekcije i custom Alpine widgete.
+
+## Sigurnosna HTTP zaglavlja
+- Corexis web middleware mora zadano postaviti `X-Content-Type-Options: nosniff`, `X-Frame-Options: SAMEORIGIN`, `Referrer-Policy: strict-origin-when-cross-origin` i restriktivni `Permissions-Policy` za kameru, mikrofon i geolokaciju.
+- Projekt smije proširiti ili isključiti ta zaglavlja samo kroz `corexis.security_headers` konfiguraciju i uz dokumentiran razlog; ne duplicirati ih po kontrolerima.
+- Strogi `Content-Security-Policy` nije dio osnovnog middlewarea jer zahtijeva zaseban CSP-safe browser test prolaz opisan iznad.

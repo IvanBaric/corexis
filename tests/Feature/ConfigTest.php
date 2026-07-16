@@ -16,6 +16,9 @@ class ConfigTest extends TestCase
         $this->assertSame('system', config('corexis.source.default'));
         $this->assertSame('team_id', config('corexis.tenancy.id_column'));
         $this->assertSame(12, config('corexis.pagination.default_items'));
+        $this->assertTrue(config('corexis.framework.immutable_dates'));
+        $this->assertNull(config('corexis.framework.strict_models'));
+        $this->assertSame(500.0, config('corexis.framework.cumulative_query_time_threshold_ms'));
     }
 
     public function test_config_can_be_published(): void

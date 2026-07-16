@@ -1,0 +1,22 @@
+@layer components {
+    @media (min-width: 1024px) {
+        /* Keep public content stable when Flux changes the viewport scrollbar. */
+        html:has(> body[data-corexis-public-shell]) {
+            scrollbar-gutter: stable;
+        }
+
+        /*
+         * Flux locks <html> with an inline overflow:hidden while a dropdown is
+         * open. Admin layouts keep scrolling in [data-flux-main], but public
+         * layouts use the root scrollbar, so preserve it for dropdowns only.
+         */
+        html:has(> body[data-corexis-public-shell] ui-dropdown[data-open]):not(:has(> body[data-corexis-public-shell] [data-flux-modal] > dialog[open])) {
+            overflow-y: scroll !important;
+        }
+
+        /* Flux flyouts need the root gutter released while they are in the top layer. */
+        html:has(> body[data-corexis-public-shell] [data-flux-modal] > dialog[open][data-flux-flyout]) {
+            scrollbar-gutter: auto;
+        }
+    }
+}
