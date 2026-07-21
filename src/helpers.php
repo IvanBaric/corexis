@@ -101,6 +101,8 @@ if (! function_exists('corexis_validation_toast_message')) {
             if ($friendlyMessage !== $message || corexis_validation_field_looks_like_upload((string) $field)) {
                 return $friendlyMessage;
             }
+
+            return $message;
         }
 
         return $fallback;

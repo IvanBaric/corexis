@@ -20,8 +20,8 @@ Niva koristi miran motion jezik: suptilno pojavljivanje, lagani hover na klikabi
 
 ## Standardne Vrijednosti
 
-- Page enter: `420ms ease-out`, `translateY(14px)` do `0`
-- Scroll reveal: `520ms ease-out`, `translateY(10px)` do `0`
+- Page enter: `420ms ease-out`, prijelaz opacityja bez transformiranja glavnog wrappera
+- Scroll reveal: `520ms ease-out`, prijelaz opacityja bez transformiranja cijele sekcije
 - Kartica hover: `duration-200 hover:-translate-y-0.5 hover:shadow-md`
 - Slika hover: `duration-500 group-hover:scale-[1.03]`
 - Link/icon transition: `duration-200`
@@ -56,6 +56,7 @@ Ovaj loader nije zamjena za lokalna loading stanja u adminu, listama, formama il
 - Accordion animacije su kratke i mirne: `x-transition.opacity.duration.150ms`.
 - Rotacije koristiti samo kada je layout namjerno zamišljen kao bilješka, papir ili kreativna ploča.
 - Ne miješati `hover:-translate-y-1`, `scale-[1.04]`, `duration-700` i slične vrijednosti s osnovnim sustavom.
+- Page enter i scroll reveal ne smiju ostaviti `transform` ili `will-change` na velikim wrapperima i sekcijama. Livewire lazy render tada u Chromiumu može ostaviti kompozitne spojeve između sekcija.
 - Poštovati `prefers-reduced-motion`; Corexis klase to rade automatski.
 
 ## Checklist
